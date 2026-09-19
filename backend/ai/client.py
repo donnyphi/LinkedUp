@@ -1,9 +1,9 @@
-"""Thin Anthropic wrapper. One model constant, one call helper, always safe."""
+"""Thin Anthropic wrapper. One model constant, one call path, key never leaves here."""
 
 import json
 import os
 import re
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 # The only place a model id lives.
 MODEL = "claude-opus-5"
@@ -14,6 +14,14 @@ TEMPERATURE = 0.7
 
 _client = None
 _model_in_use = MODEL
+
+
+class NoKey(Exception):
+    """ANTHROPIC_API_KEY is not set on the backend."""
+
+
+class CallFailed(Exception):
+    """The provider call failed on every model we tried. Message is safe for a client."""
 
 
 def have_key() -> bool:
@@ -54,22 +62,37 @@ def parse_json(text: str) -> Any:
         raise
 
 
-def ask(system: str, user: str, max_tokens: int = MAX_TOKENS) -> Optional[str]:
-    """Return raw text, or None if anything at all goes wrong."""
+def complete(
+    system: str,
+    messages: List[dict],
+    max_tokens: int = MAX_TOKENS,
+    temperature: float = TEMPERATURE,
+) -> str:
+    """Raise NoKey or CallFailed; never leak the key or a raw provider error."""
     global _model_in_use
     if not have_key():
-        return None
+        raise NoKey()
+    last_error = "unknown"
     for model in (_model_in_use, FALLBACK_MODEL):
         try:
             resp = _get_client().messages.create(
                 model=model,
                 max_tokens=max_tokens,
-                temperature=TEMPERATURE,
+                temperature=temperature,
                 system=system,
-                messages=[{"role": "user", "content": user}],
+                messages=messages,
             )
             _model_in_use = model
             return "".join(b.text for b in resp.content if b.type == "text")
-        except Exception:
+        except Exception as e:  # noqa: BLE001 - we deliberately swallow provider detail
+            last_error = type(e).__name__
             continue
-    return None
+    raise CallFailed(f"Claude did not answer ({last_error})")
+
+
+def ask(system: str, user: str, max_tokens: int = MAX_TOKENS) -> Optional[str]:
+    """The soft variant used by the cached calls: None on any failure."""
+    try:
+        return complete(system, [{"role": "user", "content": user}], max_tokens=max_tokens)
+    except (NoKey, CallFailed):
+        return None
