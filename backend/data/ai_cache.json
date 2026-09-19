@@ -1,0 +1,186 @@
+{
+  "score_pairs:28d4d7db261fccd5": {
+    "p_maya": {
+      "passion": 95,
+      "style": 72
+    },
+    "p_dev": {
+      "passion": 93,
+      "style": 90
+    },
+    "p_sofia": {
+      "passion": 88,
+      "style": 88
+    },
+    "p_priya": {
+      "passion": 57,
+      "style": 88
+    },
+    "p_kai": {
+      "passion": 45,
+      "style": 82
+    },
+    "p_zoe": {
+      "passion": 57,
+      "style": 85
+    },
+    "p_finn": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_jonas": {
+      "passion": 24,
+      "style": 78
+    },
+    "p_isla": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_amara": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_theo": {
+      "passion": 24,
+      "style": 86
+    },
+    "p_lin": {
+      "passion": 24,
+      "style": 86
+    },
+    "p_ruby": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_omar": {
+      "passion": 24,
+      "style": 72
+    },
+    "p_nadia": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_elena": {
+      "passion": 55,
+      "style": 86
+    },
+    "p_marcus": {
+      "passion": 24,
+      "style": 92
+    },
+    "p_yuki": {
+      "passion": 24,
+      "style": 86
+    },
+    "p_tess": {
+      "passion": 24,
+      "style": 86
+    },
+    "p_arjun": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_ade": {
+      "passion": 26,
+      "style": 85
+    },
+    "p_clara": {
+      "passion": 25,
+      "style": 86
+    },
+    "p_hana": {
+      "passion": 45,
+      "style": 86
+    },
+    "p_raj": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_noor": {
+      "passion": 24,
+      "style": 85
+    },
+    "p_bram": {
+      "passion": 24,
+      "style": 86
+    }
+  },
+  "explain:cec72ff7e5fbdf4c": "Maya has the Product design and Frontend you listed as missing, and you have the Backend and ML she's been stuck without for two years of half-finished tools. You both want the same thing badly enough to have written it down separately: software that gets bedroom producers to actually finish a song.",
+  "ideas:cec72ff7e5fbdf4c": [
+    {
+      "name": "Loop Swap",
+      "one_liner": "Post an 8-bar loop, get it back finished by a stranger in 48 hours.",
+      "roles": {
+        "me": "Audio pipeline, matching backend",
+        "them": "The whole feel of it, front to back"
+      },
+      "difficulty": "weekend"
+    },
+    {
+      "name": "Ghost Studio",
+      "one_liner": "A browser DAW that hands your unfinished track to the right collaborator.",
+      "roles": {
+        "me": "DSP in the browser, ML matching",
+        "them": "Product design, the mixer UI"
+      },
+      "difficulty": "month"
+    },
+    {
+      "name": "Last 10%",
+      "one_liner": "Scans your 200 unfinished projects and tells you which three are nearly done.",
+      "roles": {
+        "me": "Project parsing, the scoring model",
+        "them": "Making 200 dead files feel alive"
+      },
+      "difficulty": "startup"
+    }
+  ],
+  "mission:582ba18b622184bf": {
+    "steps": [
+      "Each say your one non-negotiable for this thing out loud.",
+      "Sketch the main screen on paper together. Ten minutes, no laptops.",
+      "Name it, claim the repo, push one empty commit."
+    ]
+  },
+  "mission:936c73fbdbbb07a2": {
+    "steps": [
+      "Each say your one non-negotiable for this thing out loud.",
+      "Sketch the main screen on paper together. Ten minutes, no laptops.",
+      "Name it, claim the repo, push one empty commit."
+    ]
+  },
+  "mission:93338458f3eff7aa": {
+    "steps": [
+      "Each say your one non-negotiable for this thing out loud.",
+      "Sketch the main screen on paper together. Ten minutes, no laptops.",
+      "Name it, claim the repo, push one empty commit."
+    ]
+  },
+  "builder_title:12bfb71d308be6de": "Backend person who wants musicians to finish things",
+  "builder_title:40d2b67192564725": "Designer who wants to build for musicians",
+  "builder_title:604dd045c2cf31d8": "Frontend producer building an audience first",
+  "builder_title:5d9d221f5f2fe90e": "Motion designer teaching music by making it move",
+  "builder_title:89dfcaa6ae3bc66c": "ML person listening to other people's unfinished demos",
+  "builder_title:011fb501153a3c55": "Producer who runs on deadlines and strangers",
+  "builder_title:0ef88b5b8df5b542": "Hardware person making synths people can afford",
+  "builder_title:f7e09e991d8da232": "Video person scoring films with strangers",
+  "builder_title:8aab793ea47269dd": "Designer making compliance survivable for tiny startups",
+  "builder_title:f61eab8ca823b73d": "Visual designer connecting makers to small factories",
+  "builder_title:98c1f33c5c07895a": "Data person holding the city bus accountable",
+  "builder_title:167960e96dbf7442": "Hardware person building controllers games don't have",
+  "builder_title:f4a72a4bccfd7244": "Data person finding the one change worth making",
+  "builder_title:6313d6595873cadd": "Game designer making people talk to each other",
+  "builder_title:d63ed00eaac83e40": "Systems person building storage that survives anything",
+  "builder_title:5fb98dd55c66e3c4": "ML person making old lab notebooks searchable",
+  "builder_title:b6a95d2914509bee": "Researcher tracking what changes between appointments",
+  "builder_title:29a95256b17ac7ff": "Game dev handing level design to players",
+  "builder_title:f5f0508999edda9c": "iOS dev building apps with nothing to scroll",
+  "builder_title:5a1808bf022c3b48": "Writer getting quiet experts to publish",
+  "builder_title:1e6ac1fb005fa2df": "Infra person making deploys boring for two-person teams",
+  "builder_title:ff97d2159eb56bed": "Security person catching keys before strangers do",
+  "builder_title:b2b4331ce9a4f994": "PM hunting a tiny brand's first hundred customers",
+  "builder_title:343416395697eea9": "Frontend person turning lectures into arguments",
+  "builder_title:eae38435a18020b2": "ML founder building agents that say I don't know",
+  "builder_title:93ddb242b4f7ecbb": "Designer building rooms that expire on purpose",
+  "builder_title:63d794bc7ddd94b6": "Android dev building for places with no signal"
+}
