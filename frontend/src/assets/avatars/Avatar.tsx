@@ -2,13 +2,14 @@
 
 type Palette = { bg: string; ink: string }
 
+// Warm, no purple: the brand's accent is pink/red and nothing here competes with it.
 const PALETTES: Record<string, Palette> = {
-  nova: { bg: '#E7E7FE', ink: '#5B5BF6' },
+  nova: { bg: '#FFE4EC', ink: '#E0447B' },
   juno: { bg: '#FFE7D9', ink: '#F0784B' },
   pixel: { bg: '#DDF3E4', ink: '#22A05B' },
-  ember: { bg: '#FFE3EC', ink: '#E0447B' },
-  koda: { bg: '#E2EEFF', ink: '#2F72D6' },
-  wren: { bg: '#F3E8FF', ink: '#8B5CF6' },
+  ember: { bg: '#FFF1C9', ink: '#D9950B' },
+  koda: { bg: '#DCEEFF', ink: '#2F72D6' },
+  wren: { bg: '#D8F3F0', ink: '#0F8F84' },
 }
 
 export const AVATAR_KEYS = Object.keys(PALETTES)
@@ -81,7 +82,7 @@ export default function Avatar({
       height={size}
       viewBox="0 0 64 64"
       aria-hidden
-      className={ring ? 'rounded-full ring-2 ring-white' : 'rounded-full'}
+      className={ring ? 'rounded-full ring-[3px] ring-white' : 'rounded-full'}
       style={{ display: 'block', flexShrink: 0 }}
     >
       <rect width="64" height="64" rx="32" fill={bg} />

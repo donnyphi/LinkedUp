@@ -47,6 +47,8 @@ export interface StackEntry {
   score: Score
   hook: string
   fills: string[]
+  you_bring: string[]
+  fit_label: string
 }
 
 export interface Idea {
@@ -62,7 +64,7 @@ export interface Mission {
 }
 
 export interface ChatMessage {
-  from: 'me' | 'them'
+  from: 'me' | 'them' | 'system'
   text: string
   ts: number
 }
@@ -87,5 +89,15 @@ export interface Match {
   mission: Mission | null
   chat: ChatMessage[]
   fills: string[]
+  you_bring: string[]
   skill_bars: SkillBar[]
+  pending_reply: boolean
+}
+
+export type ChatStatus = 'ok' | 'no_key' | 'error'
+
+export interface ChatResponse {
+  status: ChatStatus
+  match: Match
+  error?: string
 }

@@ -1,32 +1,35 @@
 """The hand-written seed roster.
 
 Order in this list is meaningless - the stack is always sorted by score.
-p_dev, p_sofia and p_maya are the three profiles the demo script walks through.
+p_amara is the profile the demo script walks through; DEMO_USER is the Demo fill.
 """
 
 def S(name, level="solid"):
     return {"name": name, "level": level}
 
 
-ALEX = {
+DEMO_USER = {
     "id": "me",
     "name": "Alex Chen",
     "school": "MIT",
     "avatar": "nova",
-    "skills": [S("Backend", "expert"), S("ML / AI"), S("Data")],
-    "missing": ["Product design", "Visual design", "Frontend"],
-    "want_to_build": "Something that helps people who make music discover collaborators and finish songs instead of hoarding 200 unfinished projects.",
+    "skills": [S("Frontend", "expert"), S("Product design"), S("Visual design")],
+    "missing": ["Backend", "Data"],
+    "want_to_build": "Something that shows a neighborhood what's actually happening on their block, so neighbors stop relying on one chaotic group chat.",
     "commitment": "side_project",
     "experience": "shipped",
     "team_size": "2",
     "prompts": {
-        "hackathon_person": "...who writes the whole backend before anyone's agreed on what we're building",
-        "toxic_trait": "I'll say 'that's easy' and then disappear for 6 hours",
-        "excited_about": "audio DSP and anything with a good API",
+        "hackathon_person": "...who has the UI running on a real phone before the backend exists",
+        "toxic_trait": "I'll redesign the empty state instead of fixing the bug",
+        "excited_about": "public data that nobody can read, and making it readable",
     },
-    "builder_title": "Backend person who wants musicians to finish things",
+    "builder_title": "Frontend person who wants to build for neighborhoods",
     "github": "https://github.com/alexchen",
 }
+
+# Kept for anything that still imports the old name.
+ALEX = DEMO_USER
 
 ROSTER = [
     {
@@ -197,7 +200,7 @@ ROSTER = [
         "school": "Wellesley",
         "avatar": "koda",
         "skills": [S("Data", "expert"), S("Backend"), S("Writing / Content")],
-        "missing": ["Frontend", "Visual design"],
+        "missing": ["Frontend", "Product design"],
         "want_to_build": "Something that shows people what their bus commute actually did this month versus the posted schedule.",
         "commitment": "side_project",
         "experience": "shipped",

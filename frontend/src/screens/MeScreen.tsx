@@ -1,18 +1,10 @@
 import { RotateCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../assets/avatars/Avatar'
+import Button from '../components/Button'
+import Card from '../components/Card'
+import { COMMITMENT_LABEL, EXPERIENCE_LABEL, TEAM_LABEL } from '../constants'
 import { useApp } from '../store'
-
-const COMMITMENT: Record<string, string> = {
-  hackathon: 'This hackathon',
-  side_project: 'Side project',
-  cofounder: 'Cofounder',
-}
-const EXPERIENCE: Record<string, string> = {
-  first_hackathon: 'First hackathon',
-  shipped: 'Shipped things',
-  founded: 'Founded something',
-}
 
 export default function MeScreen() {
   const { profile, restart } = useApp()
@@ -31,65 +23,47 @@ export default function MeScreen() {
 
       <p className="mt-4 text-[17px] font-medium leading-snug">{profile.builder_title}</p>
 
-      <section className="mt-6 rounded-3xl border border-[#EEE] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-        <h2 className="mb-2 text-[12px] font-medium uppercase tracking-wide text-muted">
-          What you're good at
-        </h2>
+      <Card className="mt-5 p-5">
+        <h2 className="mb-2 text-[13px] font-medium text-muted">What I bring</h2>
         <div className="flex flex-wrap gap-1.5">
           {profile.skills.map((s) => (
-            <span
-              key={s.name}
-              className="rounded-full bg-gray-100 px-3 py-1.5 text-[13px] font-medium"
-            >
+            <span key={s.name} className="rounded-full bg-page px-3 py-1.5 text-[13px] font-medium">
               {s.name}
               <span className="ml-1.5 text-muted">{s.level}</span>
             </span>
           ))}
         </div>
 
-        <h2 className="mb-2 mt-5 text-[12px] font-medium uppercase tracking-wide text-muted">
-          What you're missing
-        </h2>
+        <h2 className="mb-2 mt-5 text-[13px] font-medium text-muted">What I'm missing</h2>
         <div className="flex flex-wrap gap-1.5">
           {profile.missing.map((s) => (
-            <span
-              key={s}
-              className="rounded-full bg-accent/10 px-3 py-1.5 text-[13px] font-medium text-accent"
-            >
+            <span key={s} className="rounded-full bg-primary-soft px-3 py-1.5 text-[13px] font-medium text-primary">
               {s}
             </span>
           ))}
         </div>
 
-        <h2 className="mb-1.5 mt-5 text-[12px] font-medium uppercase tracking-wide text-muted">
-          What you want to build
-        </h2>
+        <h2 className="mb-1.5 mt-5 text-[13px] font-medium text-muted">What I want to build</h2>
         <p className="text-[14px] leading-snug">{profile.want_to_build}</p>
 
-        <div className="mt-5 flex gap-2 text-[12px]">
-          <span className="rounded-full bg-gray-100 px-3 py-1.5 font-medium">
-            {COMMITMENT[profile.commitment]}
-          </span>
-          <span className="rounded-full bg-gray-100 px-3 py-1.5 font-medium">
-            {EXPERIENCE[profile.experience]}
-          </span>
-          <span className="rounded-full bg-gray-100 px-3 py-1.5 font-medium">
-            Team of {profile.team_size}
-          </span>
+        <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
+          <span className="rounded-full bg-page px-3 py-1.5 font-medium">{COMMITMENT_LABEL[profile.commitment]}</span>
+          <span className="rounded-full bg-page px-3 py-1.5 font-medium">{EXPERIENCE_LABEL[profile.experience]}</span>
+          <span className="rounded-full bg-page px-3 py-1.5 font-medium">{TEAM_LABEL[profile.team_size]}</span>
         </div>
-      </section>
+      </Card>
 
-      <button
-        type="button"
+      <Button
+        variant="secondary"
+        className="mt-6"
         onClick={async () => {
           await restart()
           nav('/')
         }}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#EEE] bg-white py-3.5 text-[14px] font-medium text-muted"
       >
         <RotateCcw size={16} strokeWidth={1.75} />
-        Start the demo over
-      </button>
+        Reset the demo
+      </Button>
     </div>
   )
 }

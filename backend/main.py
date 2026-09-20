@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import scoring
 import store
-from ai import calls
+from ai import calls, client as ai_client
 from models import (
     ChatIn,
     IdeaIn,
@@ -17,7 +17,7 @@ from models import (
 )
 from taxonomy import AVATARS, COMMITMENTS, EXPERIENCES, LEVELS, SKILLS, TEAM_SIZES
 
-app = FastAPI(title="LinkUp")
+app = FastAPI(title="LinkedUp")
 
 app.add_middleware(
     CORSMiddleware,
@@ -85,7 +85,15 @@ def _match_view(match: Dict) -> Dict:
         raise HTTPException(404, "That person is gone.")
     me = _me()
     _, fills = scoring.skills_score(me, other)
-    return {**match, "other": other, "fills": fills, "skill_bars": _skill_bars(me, other)}
+    chat = match.get("chat") or []
+    return {
+        **match,
+        "other": other,
+        "fills": fills,
+        "you_bring": scoring.you_bring(me, other),
+        "skill_bars": _skill_bars(me, other),
+        "pending_reply": bool(chat) and chat[-1].get("from") == "me",
+    }
 
 
 # --- routes ----------------------------------------------------------------
@@ -96,6 +104,15 @@ def health():
     from ai import client
 
     return {"ok": True, "model": client.MODEL, "live_ai": client.have_key()}
+
+
+@app.get("/session")
+def session():
+    """Everything the app needs on load. Always 200, so a fresh visit is a quiet one."""
+    me = store.get_profile(ME)
+    if not me:
+        return {"profile": None, "stack": []}
+    return {"profile": me, "stack": _stack_rows(me)}
 
 
 @app.get("/taxonomy")
@@ -226,6 +243,26 @@ def toggle_step(mid: str, body: ToggleIn):
     return _match_view(m)
 
 
+NO_KEY_NOTE = "LinkedUp chat needs ANTHROPIC_API_KEY set on the backend. Add it and restart uvicorn."
+
+
+def _reply(m: Dict) -> Dict:
+    """Ask Claude for the teammate's next line. Returns the chat response envelope."""
+    other = store.get_profile(m["other_id"])
+    try:
+        text = calls.teammate_reply(_me(), other, m)
+    except ai_client.NoKey:
+        m["chat"].append({"from": "system", "text": NO_KEY_NOTE, "ts": time.time()})
+        store.upsert_match(m)
+        return {"status": "no_key", "match": _match_view(m)}
+    except ai_client.CallFailed:
+        store.upsert_match(m)
+        return {"status": "error", "match": _match_view(m), "error": "Couldn't reach Claude. Your message is saved."}
+    m["chat"].append({"from": "them", "text": text, "ts": time.time()})
+    store.upsert_match(m)
+    return {"status": "ok", "match": _match_view(m)}
+
+
 @app.post("/match/{mid}/chat")
 def post_chat(mid: str, body: ChatIn):
     m = store.get_match(mid)
@@ -234,13 +271,21 @@ def post_chat(mid: str, body: ChatIn):
     text = body.text.strip()
     if not text:
         raise HTTPException(400, "Empty message")
-
-    other = store.get_profile(m["other_id"])
     m["chat"].append({"from": "me", "text": text, "ts": time.time()})
-    reply = calls.simulate_reply(_me(), other, m["chat"])
-    m["chat"].append({"from": "them", "text": reply, "ts": time.time() + 1})
-    store.upsert_match(m)
-    return _match_view(m)
+    store.upsert_match(m)  # the user's words are kept whatever happens next
+    return _reply(m)
+
+
+@app.post("/match/{mid}/chat/retry")
+def retry_chat(mid: str):
+    """Try again for the last unanswered message. Never appends a second copy of it."""
+    m = store.get_match(mid)
+    if not m:
+        raise HTTPException(404, "No such match")
+    chat = m.get("chat") or []
+    if not chat or chat[-1].get("from") != "me":
+        raise HTTPException(400, "Nothing waiting for a reply")
+    return _reply(m)
 
 
 @app.post("/reset")

@@ -28,13 +28,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     let cancelled = false
     ;(async () => {
       try {
-        const [me, { stack: rows }] = await Promise.all([api.profile('me'), api.stack()])
-        if (!cancelled) {
+        const { profile: me, stack: rows } = await api.session()
+        if (!cancelled && me) {
           setProfile(me)
           setStackRaw(rows)
         }
       } catch {
-        /* no profile yet - that is the normal first run */
+        /* backend not up yet - the landing page still renders */
       } finally {
         if (!cancelled) setBooted(true)
       }

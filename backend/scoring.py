@@ -75,6 +75,23 @@ def score_one(me: Dict, them: Dict, ai: Dict[str, int]) -> Tuple[Dict[str, int],
     return {"overall": overall(parts), **parts}, fills
 
 
+def you_bring(me: Dict, them: Dict) -> List[str]:
+    """My skills that sit in their missing list, strongest first."""
+    mine = _levels(me)
+    their_missing = set(them.get("missing") or [])
+    out = [s for s in mine if s in their_missing]
+    out.sort(key=lambda s: -LEVEL_WEIGHT.get(mine[s], 1.0))
+    return out
+
+
+def fit_label(score: Dict[str, int]) -> str:
+    if score["overall"] >= 85:
+        return "Strong complement"
+    if score["overall"] >= 70:
+        return "Good complement"
+    return "Worth a look"
+
+
 def hook_line(score: Dict[str, int], fills: List[str]) -> str:
     if fills:
         return f"{score['overall']}% · they have the {fills[0]} you're missing"
@@ -90,6 +107,8 @@ def build_stack(me: Dict, candidates: List[Dict], ai_scores: Dict[str, Dict[str,
                 "profile": c,
                 "score": score,
                 "fills": fills,
+                "you_bring": you_bring(me, c),
+                "fit_label": fit_label(score),
                 "hook": hook_line(score, fills),
             }
         )

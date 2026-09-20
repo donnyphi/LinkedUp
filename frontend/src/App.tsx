@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-0 sm:p-6">
-      <div className="flex h-screen w-full max-w-[420px] flex-col overflow-hidden bg-page sm:h-[min(860px,calc(100vh-3rem))] sm:rounded-[40px] sm:border sm:border-black/10 sm:shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
+      <div className="flex h-screen w-full max-w-[420px] flex-col overflow-hidden bg-page sm:h-[min(860px,calc(100vh-3rem))] sm:rounded-[40px] sm:border sm:border-black/10 sm:shadow-[0_24px_70px_rgba(0,0,0,0.12)]">
         <div className="no-scrollbar flex-1 overflow-y-auto">
           {!booted ? null : (
             <Routes>

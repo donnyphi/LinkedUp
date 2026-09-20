@@ -66,6 +66,8 @@ class StackEntry(BaseModel):
     score: Score
     hook: str
     fills: List[str] = Field(default_factory=list)
+    you_bring: List[str] = Field(default_factory=list)
+    fit_label: str = ""
 
 
 class Idea(BaseModel):
@@ -81,7 +83,7 @@ class Mission(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    from_: Literal["me", "them"] = Field(alias="from")
+    from_: Literal["me", "them", "system"] = Field(alias="from")
     text: str
     ts: float
 
@@ -105,7 +107,9 @@ class MatchView(Match):
 
     other: Profile
     fills: List[str] = Field(default_factory=list)
+    you_bring: List[str] = Field(default_factory=list)
     skill_bars: List[Dict] = Field(default_factory=list)
+    pending_reply: bool = False
 
 
 class SwipeIn(BaseModel):

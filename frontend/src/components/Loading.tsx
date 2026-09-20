@@ -5,8 +5,8 @@ export default function Loading({ label }: { label: string }) {
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="h-2 w-2 animate-bounce rounded-full bg-accent"
-            style={{ animationDelay: `${i * 0.12}s` }}
+            className="typing-dot h-2 w-2 rounded-full bg-primary"
+            style={{ animationDelay: `${i * 0.15}s` }}
           />
         ))}
       </div>

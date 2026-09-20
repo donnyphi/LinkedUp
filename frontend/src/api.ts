@@ -1,4 +1,4 @@
-import type { Match, Profile, ProfileIn, Score, StackEntry } from './types'
+import type { ChatResponse, Match, Profile, ProfileIn, Score, StackEntry } from './types'
 
 const BASE = '/api'
 
@@ -23,6 +23,8 @@ export const api = {
   createProfile: (body: ProfileIn) =>
     post<{ profile: Profile; stack: StackEntry[] }>('/profile', body),
 
+  session: () => call<{ profile: Profile | null; stack: StackEntry[] }>('/session'),
+
   stack: () => call<{ stack: StackEntry[] }>('/stack'),
 
   why: (other_id: string) => call<{ explanation: string; score: Score }>(`/why/${other_id}`),
@@ -40,7 +42,9 @@ export const api = {
 
   toggleStep: (id: string, step: number) => post<Match>(`/match/${id}/mission/toggle`, { step }),
 
-  sendChat: (id: string, text: string) => post<Match>(`/match/${id}/chat`, { text }),
+  sendChat: (id: string, text: string) => post<ChatResponse>(`/match/${id}/chat`, { text }),
+
+  retryChat: (id: string) => post<ChatResponse>(`/match/${id}/chat/retry`),
 
   reset: () => post<{ ok: boolean }>('/reset'),
 }

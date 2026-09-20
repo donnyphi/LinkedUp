@@ -220,26 +220,141 @@ def first_mission(user: Dict, other: Dict, idea: Dict) -> Dict:
     return _cached(key, live, lambda: fallbacks.first_mission(user, other, idea))
 
 
-# --- F ---------------------------------------------------------------------
+# --- F. teammate chat ----------------------------------------------------------
+#
+# The one call that is never cached and never canned. Every request carries the
+# whole situation - both profiles, why they matched, the project they picked,
+# the mission and its state, and the entire conversation - so the reply can
+# only ever be about what was actually said.
 
-REPLY_SYSTEM = (
-    "You are replying as this person in a chat with someone they just matched with on a "
-    "builder app. Stay in their voice, using their prompt answers as the voice reference. "
-    "25 words max. Lowercase is fine. " + BAN + " Return the message only."
-)
+CHAT_MAX_TOKENS = 150
+CHAT_TEMPERATURE = 0.8
+
+CHAT_RULES = """Rules:
+- Respond directly to what they actually said. Never assume something was discussed that wasn't.
+- Don't skip ahead. If they just say "hey", say hey back before any planning.
+- Keep continuity with the full conversation. Never invent things they said.
+- Sound like a real college student at a hackathon: casual, friendly, concise, collaborative.
+- Usually one or two sentences. Lowercase is fine.
+- No corporate language, no motivational-coach language. Don't sound like an AI assistant.
+- Don't keep re-explaining why you matched. Mention the project when it's relevant.
+- At most one question per reply. Don't force the checklist into every reply.
+- Gently move toward actually building something.
+- If they volunteer to own a task, react to it and pick a complementary one for yourself.
+- You may disagree if their idea seems weak.
+- Return only the message. No quotes, no name prefix, no metadata."""
+
+CHAT_EXAMPLES = """Tuning examples (project here is "Block Board"):
+USER: hey
+GOOD: hey! glad we matched lol. you wanna figure out what Block Board should actually do first?
+BAD: ok I'm in. what's the smallest version we could have working tonight?  (skips the greeting, assumes planning started)
+
+USER: hey / YOU: (the good reply above) / USER: yeah what do you think
+GOOD: I'd start stupid small - one block page where neighbors can post an update and mark what's important. if you take the frontend, I can wire up the data/backend.
+
+USER: I can do the frontend
+GOOD: perfect, I'll own the backend/data side then. wanna make the first version just posts + one 'important' flag?
+
+USER: idk if this project is even useful
+GOOD: fair lol. I think it only works if it tells you something your neighborhood group chat doesn't already tell you - maybe we pick one specific problem first?"""
 
 
-def simulate_reply(user: Dict, other: Dict, chat: List[Dict]) -> str:
-    turn = sum(1 for m in chat if m.get("from") == "them")
-    last = next((m["text"] for m in reversed(chat) if m.get("from") == "me"), "")
-    key = _key("reply", other.get("id"), turn, last.strip().lower())
+def _persona_block(p: Dict, include_missing: bool) -> str:
+    pr = p.get("prompts") or {}
+    lines = [
+        f"name: {p.get('name')}",
+        f"school: {p.get('school')}",
+        f"skills: {_skill_line(p)}",
+    ]
+    if include_missing:
+        lines.append(f"missing skills: {', '.join(p.get('missing') or [])}")
+    lines += [
+        f"wants to build: {p.get('want_to_build')}",
+        f"commitment: {p.get('commitment')} | experience: {p.get('experience')}",
+        "working style, in their own words:",
+        f"  - at a hackathon, the person who {pr.get('hackathon_person', '')}",
+        f"  - toxic trait as a teammate: {pr.get('toxic_trait', '')}",
+        f"  - irrationally excited about: {pr.get('excited_about', '')}",
+    ]
+    return "\n".join(lines)
 
-    def live():
-        body = (
-            "YOU ARE\n" + _describe(other) + "\n\nTHEY JUST SAID\n" + last +
-            "\n\nCONVERSATION SO FAR\n" + json.dumps(chat[-6:])
+
+def chat_system_prompt(user: Dict, other: Dict, match: Dict) -> str:
+    first = (other.get("name") or "your teammate").split()[0]
+    idea = None
+    if match.get("chosen_idea") is not None and match.get("ideas"):
+        idea = match["ideas"][match["chosen_idea"]]
+    mission = match.get("mission") or {}
+    steps = mission.get("steps") or []
+    done = mission.get("done") or []
+
+    if idea:
+        roles = idea.get("roles") or {}
+        project = (
+            f"name: {idea.get('name')}\n"
+            f"description: {idea.get('one_liner')}\n"
+            f"your likely contribution: {roles.get('them', '')}\n"
+            f"their likely contribution: {roles.get('me', '')}"
         )
-        raw = client.ask(REPLY_SYSTEM, body, max_tokens=120)
-        return raw.strip() if raw else None
+    else:
+        project = "not chosen yet - you are still deciding what to build together"
 
-    return _cached(key, live, lambda: fallbacks.simulate_reply(other, chat))
+    if steps:
+        mission_txt = "\n".join(f"{i + 1}. {step}" for i, step in enumerate(steps))
+        progress = ", ".join(
+            f"step {i + 1} {'done' if (i < len(done) and done[i]) else 'not done'}"
+            for i in range(len(steps))
+        )
+    else:
+        mission_txt, progress = "no mission yet", "nothing started"
+
+    return (
+        f"You are {other.get('name')}, a fictional demo persona in LinkedUp, an app that matches "
+        f"student builders. You just matched with {user.get('name')} because you might be good "
+        "people to build something together. You are chatting inside the app.\n\n"
+        f"<your_profile>\n{_persona_block(other, include_missing=True)}\n</your_profile>\n\n"
+        f"<other_person>\n{_persona_block(user, include_missing=True)}\n</other_person>\n\n"
+        f"<why_you_matched>\n{match.get('explanation', '')}\n</why_you_matched>\n\n"
+        f"<selected_project>\n{project}\n</selected_project>\n\n"
+        f"<current_mission>\nFirst 30 minutes:\n{mission_txt}\n</current_mission>\n\n"
+        f"<mission_progress>\n{progress}\n</mission_progress>\n\n"
+        f"Respond as {first}. {CHAT_RULES}\n\n{CHAT_EXAMPLES}"
+    )
+
+
+def _transcript(other: Dict, chat: List[Dict]) -> str:
+    first = (other.get("name") or "THEM").split()[0].upper()
+    lines = []
+    for m in chat:
+        if m.get("from") == "me":
+            lines.append(f"USER: {m['text']}")
+        elif m.get("from") == "them":
+            lines.append(f"{first}: {m['text']}")
+    return "\n".join(lines) if lines else "(nothing yet)"
+
+
+def _clean_reply(text: str, other: Dict) -> str:
+    text = (text or "").strip()
+    # Model sometimes wraps the line in quotes or labels it. Strip both.
+    text = text.strip('"').strip("\u201c\u201d").strip("'").strip()
+    first = (other.get("name") or "").split()[0] if other.get("name") else ""
+    for prefix in (f"{first}:", f"{first.upper()}:", "YOU:", "You:"):
+        if first and text.startswith(prefix):
+            text = text[len(prefix):].strip()
+    return text.strip('"').strip()
+
+
+def teammate_reply(user: Dict, other: Dict, match: Dict) -> str:
+    """Raises client.NoKey or client.CallFailed. Never returns an empty string."""
+    system = chat_system_prompt(user, other, match)
+    body = (
+        "<conversation>\n" + _transcript(other, match.get("chat") or []) + "\n</conversation>\n\n"
+        f"Write {other.get('name', 'your').split()[0]}'s next message."
+    )
+    messages = [{"role": "user", "content": body}]
+    for _attempt in range(2):
+        raw = client.complete(system, messages, max_tokens=CHAT_MAX_TOKENS, temperature=CHAT_TEMPERATURE)
+        text = _clean_reply(raw, other)
+        if text:
+            return text
+    raise client.CallFailed("Claude returned an empty reply twice")

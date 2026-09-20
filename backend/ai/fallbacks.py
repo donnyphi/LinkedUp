@@ -8,7 +8,7 @@ import math
 import re
 from typing import Dict, List
 
-MAYA_ID = "p_maya"
+AMARA_ID = "p_amara"
 
 # --- text features ---------------------------------------------------------
 
@@ -35,8 +35,8 @@ CLUSTERS = {
     "neuroscience dataset experiment",
     "food": "food restaurant restaurants recipe recipes cook cooking kitchen coffee menu "
     "farmers grocery",
-    "civic": "city transit housing government voting civic local neighborhood public "
-    "policy municipal commute",
+    "civic": "city transit housing government voting civic local neighborhood neighbors "
+    "neighbor block blocks bus buses public policy municipal commute commuters",
     "commerce": "shop store retail marketplace sell selling brand fashion ecommerce "
     "inventory manufacturer manufacturers boutique",
     "productivity": "productivity notes todo calendar focus habit habits organize "
@@ -229,17 +229,17 @@ def builder_title(profile: Dict) -> str:
 
 # --- C. explain_match ------------------------------------------------------
 
-MAYA_EXPLANATION = (
-    "Maya has the Product design and Frontend you listed as missing, and you have the "
-    "Backend and ML she's been stuck without for two years of half-finished tools. "
-    "You both want the same thing badly enough to have written it down separately: "
-    "software that gets bedroom producers to actually finish a song."
+AMARA_EXPLANATION = (
+    "Amara has the Backend and Data you said you're missing, and you have the Frontend and "
+    "Product design she's been building around for two years. You both want to build for the "
+    "same street: she wants to show a neighborhood what its bus actually did, you want to give "
+    "the block one place to see what's going on."
 )
 
 
 def explain_match(user: Dict, other: Dict, score: Dict, fills: List[str]) -> str:
-    if other.get("id") == MAYA_ID:
-        return MAYA_EXPLANATION
+    if other.get("id") == AMARA_ID:
+        return AMARA_EXPLANATION
     name = other.get("name", "They").split()[0]
     theirs = fills[:2] or [s["name"] for s in (other.get("skills") or [])][:2]
     mine = {s["name"] for s in (user.get("skills") or [])}
@@ -268,23 +268,23 @@ def explain_match(user: Dict, other: Dict, score: Dict, fills: List[str]) -> str
 
 # --- D. generate_ideas -----------------------------------------------------
 
-MAYA_IDEAS = [
+AMARA_IDEAS = [
     {
-        "name": "Loop Swap",
-        "one_liner": "Post an 8-bar loop, get it back finished by a stranger in 48 hours.",
-        "roles": {"me": "Audio pipeline, matching backend", "them": "The whole feel of it, front to back"},
+        "name": "Block Board",
+        "one_liner": "One page per block for the things neighbors actually need to know.",
+        "roles": {"me": "The block page, posts UI, mobile layout", "them": "Data model, backend, the feed"},
         "difficulty": "weekend",
     },
     {
-        "name": "Ghost Studio",
-        "one_liner": "A browser DAW that hands your unfinished track to the right collaborator.",
-        "roles": {"me": "DSP in the browser, ML matching", "them": "Product design, the mixer UI"},
+        "name": "Late Bus",
+        "one_liner": "Shows what your commute really did this month, not the posted schedule.",
+        "roles": {"me": "The daily view and the sharing card", "them": "Transit data pipeline, the numbers"},
         "difficulty": "month",
     },
     {
-        "name": "Last 10%",
-        "one_liner": "Scans your 200 unfinished projects and tells you which three are nearly done.",
-        "roles": {"me": "Project parsing, the scoring model", "them": "Making 200 dead files feel alive"},
+        "name": "City Hall API",
+        "one_liner": "Makes local government data usable by the people who live there.",
+        "roles": {"me": "Docs site, explorer UI, developer onboarding", "them": "Scrapers, schema, the API itself"},
         "difficulty": "startup",
     },
 ]
@@ -344,8 +344,8 @@ IDEA_TEMPLATES = {
 
 
 def generate_ideas(user: Dict, other: Dict) -> List[Dict]:
-    if other.get("id") == MAYA_ID:
-        return [dict(i) for i in MAYA_IDEAS]
+    if other.get("id") == AMARA_ID:
+        return [dict(i) for i in AMARA_IDEAS]
     cluster = top_cluster(user.get("want_to_build", ""), other.get("want_to_build", ""))
     rows = IDEA_TEMPLATES.get(cluster, IDEA_TEMPLATES["generic"])
     my_role = _top_skill(user)
@@ -363,9 +363,9 @@ def generate_ideas(user: Dict, other: Dict) -> List[Dict]:
 
 # --- E. first_mission ------------------------------------------------------
 
-MAYA_MISSION = [
-    "Each say your one non-negotiable for this thing out loud.",
-    "Sketch the main screen on paper together. Ten minutes, no laptops.",
+AMARA_MISSION = [
+    "Each say the one thing Block Board must do or it's pointless.",
+    "Sketch the block page on paper together. Ten minutes, no laptops.",
     "Name it, claim the repo, push one empty commit.",
 ]
 
@@ -377,28 +377,6 @@ GENERIC_MISSION = [
 
 
 def first_mission(user: Dict, other: Dict, idea: Dict) -> Dict:
-    if other.get("id") == MAYA_ID:
-        return {"steps": list(MAYA_MISSION)}
+    if other.get("id") == AMARA_ID:
+        return {"steps": list(AMARA_MISSION)}
     return {"steps": list(GENERIC_MISSION)}
-
-
-# --- F. simulate_reply -----------------------------------------------------
-
-MAYA_REPLIES = [
-    "ok I already opened Figma. I'm not going to pretend I didn't.",
-    "genuinely the first person who's said 'finish' instead of 'launch'. what's your non-negotiable?",
-    "fine. but I'm naming it and you don't get a vote on the border radius.",
-]
-
-GENERIC_REPLIES = [
-    "ok I'm in. what's the smallest version we could have working tonight?",
-    "was literally thinking about this yesterday. what do you want to own?",
-    "cool. give me one thing you'd refuse to cut and I'll give you mine.",
-    "deal. sending you a repo link in a sec.",
-]
-
-
-def simulate_reply(other: Dict, chat: List[Dict]) -> str:
-    turn = sum(1 for m in chat if m.get("from") == "them")
-    pool = MAYA_REPLIES if other.get("id") == MAYA_ID else GENERIC_REPLIES
-    return pool[turn % len(pool)]

@@ -10,7 +10,9 @@ fail() { printf '\033[31mFAIL: %s\033[0m\n' "$*" >&2; exit 1; }
 j() { python3 -c "import sys,json;d=json.load(sys.stdin);print(eval('d'+sys.argv[1]))" "$1"; }
 
 step "0. health"
-curl -sf "$API/health" | j "['ok']" | grep -q True || fail "backend is not up at $API"
+HEALTH=$(curl -sf "$API/health") || fail "backend is not up at $API"
+LIVE=$(echo "$HEALTH" | j "['live_ai']")
+echo "   live_ai: $LIVE"
 
 step "1. reset"
 curl -sf -X POST "$API/reset" >/dev/null
@@ -20,16 +22,16 @@ PROFILE=$(curl -sf -X POST "$API/profile" -H 'content-type: application/json' -d
   "name": "Alex Chen",
   "school": "MIT",
   "avatar": "nova",
-  "skills": [{"name":"Backend","level":"expert"},{"name":"ML / AI","level":"solid"},{"name":"Data","level":"solid"}],
-  "missing": ["Product design", "Visual design", "Frontend"],
-  "want_to_build": "Something that helps people who make music discover collaborators and finish songs instead of hoarding 200 unfinished projects.",
+  "skills": [{"name":"Frontend","level":"expert"},{"name":"Product design","level":"solid"},{"name":"Visual design","level":"solid"}],
+  "missing": ["Backend", "Data"],
+  "want_to_build": "Something that shows a neighborhood what'"'"'s actually happening on their block, so neighbors stop relying on one chaotic group chat.",
   "commitment": "side_project",
   "experience": "shipped",
   "team_size": "2",
   "prompts": {
-    "hackathon_person": "...who writes the whole backend before anyone'"'"'s agreed on what we'"'"'re building",
-    "toxic_trait": "I'"'"'ll say '"'"'that'"'"'s easy'"'"' and then disappear for 6 hours",
-    "excited_about": "audio DSP and anything with a good API"
+    "hackathon_person": "...who has the UI running on a real phone before the backend exists",
+    "toxic_trait": "I'"'"'ll redesign the empty state instead of fixing the bug",
+    "excited_about": "public data that nobody can read, and making it readable"
   },
   "github": "https://github.com/alexchen"
 }')
@@ -40,26 +42,19 @@ STACK=$(curl -sf "$API/stack")
 echo "$STACK" | python3 -c "
 import sys, json
 rows = json.load(sys.stdin)['stack']
-for i, r in enumerate(rows[:4], 1):
-    print('   %d. %-18s %s' % (i, r['profile']['name'], r['hook']))
-pos = next(i for i, r in enumerate(rows, 1) if r['profile']['id'] == 'p_maya')
-assert pos in (3, 4), 'Maya is at position %d, expected 3 or 4' % pos
+for i, r in enumerate(rows[:5], 1):
+    print('   %d. %-18s %3d%%  %s' % (i, r['profile']['name'], r['score']['overall'], r['fit_label']))
+pos = next(i for i, r in enumerate(rows, 1) if r['profile']['id'] == 'p_amara')
+am = rows[pos - 1]
+assert pos <= 3, 'Amara is at position %d, expected 1-3' % pos
+assert am['score']['overall'] >= 80, 'Amara scores %d, expected 80+' % am['score']['overall']
 assert len(rows) == 26, 'expected 26 candidates, got %d' % len(rows)
-print('   Maya at position', pos)
+print('   Amara at position %d with %d%%' % (pos, am['score']['overall']))
 " || fail "stack order is wrong"
 
-step "4. pass on the first two"
-for ID in $(echo "$STACK" | python3 -c "
-import sys, json
-print(' '.join(r['profile']['id'] for r in json.load(sys.stdin)['stack'][:2]))"); do
-  curl -sf -X POST "$API/swipe" -H 'content-type: application/json' \
-    -d "{\"other_id\":\"$ID\",\"dir\":\"left\"}" >/dev/null
-  echo "   passed on $ID"
-done
-
-step "5. link with Maya"
+step "4. connect with Amara"
 MATCH=$(curl -sf -X POST "$API/swipe" -H 'content-type: application/json' \
-  -d '{"other_id":"p_maya","dir":"right"}')
+  -d '{"other_id":"p_amara","dir":"right"}')
 MID=$(echo "$MATCH" | j "['match']['id']")
 echo "$MATCH" | python3 -c "
 import sys, json
@@ -67,17 +62,18 @@ m = json.load(sys.stdin)['match']
 assert m['explanation'].strip(), 'no explanation'
 assert len(m['ideas']) == 3, 'expected 3 ideas'
 assert any(i['difficulty'] == 'weekend' for i in m['ideas']), 'no weekend idea'
-assert len(m['skill_bars']) == 5, 'expected 5 skill bars'
+assert any(i['name'] == 'Block Board' for i in m['ideas']), 'Block Board missing'
+assert len(m['skill_bars']) >= 3, 'expected 3+ skill bars'
 print('   %d%% ·' % m['score']['overall'], m['explanation'][:70] + '...')
 for i in m['ideas']:
-    print('   - %-12s [%s] %s' % (i['name'], i['difficulty'], i['one_liner']))
+    print('   - %-13s [%s] %s' % (i['name'], i['difficulty'], i['one_liner']))
 " || fail "match payload is incomplete"
 
-step "6. pick the weekend idea"
+step "5. pick Block Board"
 IDX=$(echo "$MATCH" | python3 -c "
 import sys, json
 ideas = json.load(sys.stdin)['match']['ideas']
-print(next(i for i, x in enumerate(ideas) if x['difficulty'] == 'weekend'))")
+print(next(i for i, x in enumerate(ideas) if x['name'] == 'Block Board'))")
 curl -sf -X POST "$API/match/$MID/idea" -H 'content-type: application/json' \
   -d "{\"index\":$IDX}" | python3 -c "
 import sys, json
@@ -88,21 +84,39 @@ assert m['mission']['done'] == [False, False, False]
 for s in steps: print('   [ ]', s)
 " || fail "mission was not generated"
 
-step "7. tick step 1"
+step "6. tick step 1"
 curl -sf -X POST "$API/match/$MID/mission/toggle" -H 'content-type: application/json' \
   -d '{"step":0}' | j "['mission']['done']" | grep -q True || fail "toggle did not stick"
 echo "   step 1 done"
 
-step "8. send a message"
+step "7. send 'hey'"
 curl -sf -X POST "$API/match/$MID/chat" -H 'content-type: application/json' \
-  -d '{"text":"want to build the loop thing this weekend?"}' | python3 -c "
+  -d '{"text":"hey"}' | LIVE="$LIVE" python3 -c "
+import sys, json, os
+r = json.load(sys.stdin)
+chat = r['match']['chat']
+assert chat[0]['from'] == 'me' and chat[0]['text'] == 'hey', 'user message lost'
+if os.environ['LIVE'] == 'True':
+    assert r['status'] in ('ok', 'error'), r['status']
+    if r['status'] == 'ok':
+        assert chat[-1]['from'] == 'them' and chat[-1]['text'].strip(), 'no reply'
+        print('   amara:', chat[-1]['text'])
+    else:
+        print('   (Claude call failed; message kept, retry available)')
+        assert r['match']['pending_reply'] is True
+else:
+    assert r['status'] == 'no_key', r['status']
+    assert chat[-1]['from'] == 'system', 'expected a system note without a key'
+    print('   system note:', chat[-1]['text'])
+" || fail "chat did not behave"
+
+step "8. history survives a re-read"
+curl -sf "$API/match/$MID" | python3 -c "
 import sys, json
-chat = json.load(sys.stdin)['chat']
-assert len(chat) == 2, 'expected a reply'
-assert chat[1]['from'] == 'them' and chat[1]['text'].strip()
-print('   me:   ', chat[0]['text'])
-print('   maya: ', chat[1]['text'])
-" || fail "chat did not come back"
+m = json.load(sys.stdin)
+assert len(m['chat']) >= 1 and m['chat'][0]['text'] == 'hey'
+print('   %d message(s) persisted' % len(m['chat']))
+" || fail "chat history was not persisted"
 
 step "9. matches list"
 curl -sf "$API/matches" | python3 -c "

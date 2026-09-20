@@ -1,12 +1,29 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../assets/avatars/Avatar'
+import Button from '../components/Button'
+import { useApp } from '../store'
 
 export default function Landing() {
   const nav = useNavigate()
+  const { restart } = useApp()
+  const [resetting, setResetting] = useState(false)
+  const [resetDone, setResetDone] = useState(false)
+
+  async function reset() {
+    setResetting(true)
+    try {
+      await restart()
+      setResetDone(true)
+    } finally {
+      setResetting(false)
+    }
+  }
+
   return (
-    <div className="flex min-h-full flex-col justify-between px-6 pb-10 pt-20">
+    <div className="flex min-h-full flex-col justify-between px-6 pb-8 pt-20">
       <div>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -14,20 +31,20 @@ export default function Landing() {
           transition={{ duration: 0.4 }}
         >
           <div className="mb-8 flex -space-x-3">
-            {['nova', 'juno', 'pixel', 'ember'].map((a) => (
+            {['nova', 'koda', 'pixel', 'juno'].map((a) => (
               <Avatar key={a} name={a} size={44} ring />
             ))}
           </div>
-          <h1 className="text-[44px] font-semibold leading-[1.05] tracking-tight">
-            Link<span className="text-accent">Up</span>
+          <h1 className="text-[44px] font-bold leading-[1.02] tracking-tight text-primary">
+            LinkedUp
           </h1>
-          <p className="mt-4 text-[22px] font-medium leading-snug">
+          <p className="mt-4 text-[24px] font-semibold leading-snug">
             Less LinkedIn.
             <br />
-            More LinkUp.
+            More LinkedUp.
           </p>
           <p className="mt-5 max-w-[300px] text-[15px] leading-relaxed text-muted">
-            Find the person who has the thing you're missing, and start building with them in the
+            Find the builder who has what you're missing, then start building together in the
             next thirty minutes.
           </p>
         </motion.div>
@@ -38,18 +55,18 @@ export default function Landing() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.25, duration: 0.4 }}
       >
-        <div className="mb-6 flex gap-2 text-[13px] font-medium text-muted">
-          <span>Match.</span>
-          <span>Build.</span>
-          <span>Ship.</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => nav('/onboarding')}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-4 text-[16px] font-semibold text-white"
-        >
+        <p className="mb-5 text-[13px] font-medium text-muted">Match. Build. Ship.</p>
+        <Button onClick={() => nav('/onboarding')}>
           Get started
           <ArrowRight size={20} strokeWidth={1.75} />
+        </Button>
+        <button
+          type="button"
+          onClick={reset}
+          disabled={resetting}
+          className="mx-auto mt-4 block text-[12px] text-muted/70 underline-offset-2 hover:underline"
+        >
+          {resetDone ? 'Demo reset' : resetting ? 'Resetting…' : 'Reset demo'}
         </button>
       </motion.div>
     </div>
