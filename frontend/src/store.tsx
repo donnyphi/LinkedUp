@@ -4,6 +4,7 @@ import { api } from './api'
 import type { Profile, StackEntry } from './types'
 
 interface AppState {
+  create: { open: boolean; setOpen: (v: boolean) => void; version: number }
   profile: Profile | null
   stack: StackEntry[]
   cursor: number
@@ -21,6 +22,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [stack, setStackRaw] = useState<StackEntry[]>([])
   const [cursor, setCursor] = useState(0)
   const [booted, setBooted] = useState(false)
+  const [createOpen, setCreateOpenRaw] = useState(false)
+  const [version, setVersion] = useState(0)
+  // Closing the sheet after a post bumps the version so Home refetches.
+  const setCreateOpen = useCallback((v: boolean) => {
+    setCreateOpenRaw(v)
+    if (!v) setVersion((n) => n + 1)
+  }, [])
 
   // Survive a page refresh mid-demo: if the backend still knows "me", pick up
   // where we left off instead of bouncing back to the landing screen.
@@ -59,8 +67,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ profile, stack, cursor, booted, setProfile, setStack, advance, restart }),
-    [profile, stack, cursor, booted, setStack, advance, restart],
+    () => ({
+      create: { open: createOpen, setOpen: setCreateOpen, version },
+      profile, stack, cursor, booted, setProfile, setStack, advance, restart,
+    }),
+    [createOpen, setCreateOpen, version, profile, stack, cursor, booted, setStack, advance, restart],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
@@ -70,4 +81,8 @@ export function useApp() {
   const ctx = useContext(Ctx)
   if (!ctx) throw new Error('useApp outside AppProvider')
   return ctx
+}
+
+export function useCreate() {
+  return useApp().create
 }

@@ -359,3 +359,39 @@ def teammate_reply(user: Dict, other: Dict, match: Dict) -> str:
         if text:
             return text
     raise client.CallFailed("The model returned an empty reply twice")
+
+
+# --- G. post inference (Create) ----------------------------------------------------
+
+INFER_SYSTEM = (
+    "A student builder just posted on LinkedUp. Infer structured context from the post. "
+    "Return ONLY a JSON object: {\"area\": short lowercase topic like civic, education, social, "
+    "accessibility, health, climate, music, games, devtools, commerce, hardware or null; "
+    "\"needs\": skills they are asking for, ONLY from this list and only if the post actually asks for "
+    "help: " + ", ".join(__import__("taxonomy").SKILLS) + "; \"platform\": web | mobile | ios | android | "
+    "hardware | null; \"commitment\": hackathon | side_project | cofounder}. No prose."
+)
+
+
+def infer_post(text: str, post_type: str) -> Dict:
+    """Never cached: every post is new. Falls back to keyword inference."""
+    from taxonomy import SKILLS
+
+    def live():
+        raw = client.ask(INFER_SYSTEM, f"post type: {post_type}\npost: {text}", max_tokens=200)
+        if not raw:
+            return None
+        data = client.parse_json(raw)
+        needs = [n for n in (data.get("needs") or []) if n in SKILLS][:3]
+        return {
+            "area": (data.get("area") or None),
+            "needs": needs,
+            "platform": data.get("platform") or None,
+            "commitment": data.get("commitment") if data.get("commitment") in ("hackathon", "side_project", "cofounder") else "side_project",
+        }
+
+    try:
+        out = live()
+    except Exception:
+        out = None
+    return out if out else fallbacks.infer_post(text, post_type)

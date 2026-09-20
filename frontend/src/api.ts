@@ -64,6 +64,8 @@ export const api = {
 
   // social layer
   feed: () => call<{ items: FeedItem[] }>('/feed'),
+  createPost: (type: string, text: string) =>
+    post<{ post: FeedItem; suggestion: FeedItem | null }>('/posts', { type, text }),
   people: () => call<{ people: PersonRow[] }>('/people'),
   person: (id: string) => call<PersonPage>(`/people/${id}`),
   connect: (other_id: string) => post<{ matched: boolean; match: Match }>('/connect', { other_id }),

@@ -210,6 +210,65 @@ class ConnectIn(BaseModel):
     other_id: str
 
 
+class PostIn(BaseModel):
+    type: str = "update"
+    text: str
+
+
+VALID_POST_TYPES = {"update", "looking_for", "build_log", "idea", "question", "ship"}
+
+
+@app.post("/posts")
+def create_post(body: PostIn):
+    """Create. One model call infers area / needs / platform / commitment and it's stored on the post."""
+    me = _me()
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(400, "Say something first")
+    post_type = body.type if body.type in VALID_POST_TYPES else "update"
+    row = {
+        "id": store.next_post_id(),
+        "author_id": ME,
+        "type": post_type,
+        "text": text[:600],
+        "project_id": None,
+        "created_at": time.time(),
+        "likes": 0,
+        "inferred": calls.infer_post(text, post_type),
+    }
+    store.add_user_post(row)
+    post = _with_author(row)
+    suggestion = _ask_suggestion(me, post)
+    return {"post": {"kind": "post", **post}, "suggestion": suggestion}
+
+
+def _ask_suggestion(me: Dict, post: Dict) -> Optional[Dict]:
+    """Under my own 'looking for' post: the best-fit person who has what I asked for."""
+    if post.get("type") != "looking_for":
+        return None
+    needs = (post.get("inferred") or {}).get("needs") or []
+    if not needs:
+        return None
+    conns = store.connections()
+    for row in _stack_rows(me):
+        have = {s["name"] for s in row["profile"].get("skills") or []}
+        covered = [n for n in needs if n in have]
+        if covered and conns.get(row["profile"]["id"]) != "connected":
+            return {
+                "kind": "suggestion",
+                "id": f"sg_{row['profile']['id']}_{post['id']}",
+                "profile": row["profile"],
+                "score": row["score"],
+                "fit_label": row["fit_label"],
+                "fills": row["fills"],
+                "you_bring": row["you_bring"],
+                "reason": fallbacks.ask_reason(me, row["profile"], covered, post["text"]),
+                "post_id": post["id"],
+                "connected": False,
+            }
+    return None
+
+
 @app.post("/connect")
 def connect(body: ConnectIn):
     return {"matched": True, "match": _connect(body.other_id)}
@@ -275,6 +334,12 @@ def feed():
             items.append(_suggestion(me, row, post))
             used.add(post["author_id"])
             cooldown = 6
+        elif post["author_id"] == ME and post["type"] == "looking_for":
+            mine = _ask_suggestion(me, post)
+            if mine and mine["profile"]["id"] not in used:
+                items.append(mine)
+                used.add(mine["profile"]["id"])
+                cooldown = 6
         elif i == 7 and cooldown == 0:
             # One general card mid-feed: the best person not already shown.
             best = next((r for r in by_id.values() if r["profile"]["id"] not in used and r["score"]["overall"] >= 70), None)

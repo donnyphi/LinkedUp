@@ -1,11 +1,13 @@
+import { Plus } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import Avatar from '../assets/avatars/Avatar'
-import { useApp } from '../store'
+import { useApp, useCreate } from '../store'
 import { NAV_ITEMS } from './BottomNav'
 
 /** Desktop only. The wordmark, four tabs, and you. */
 export default function Sidebar() {
   const { profile } = useApp()
+  const { setOpen } = useCreate()
   const nav = useNavigate()
   return (
     <aside className="hidden h-screen w-[230px] shrink-0 flex-col px-5 py-6 lg:flex">
@@ -28,6 +30,17 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+      <button
+        type="button"
+        onClick={() => {
+          nav('/home')
+          setOpen(true)
+        }}
+        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-primary py-3 text-[15px] font-semibold text-white active:bg-primary-pressed"
+      >
+        <Plus size={18} strokeWidth={2.25} />
+        Create
+      </button>
       <div className="mt-auto">
         {profile && (
           <button type="button" onClick={() => nav('/profile')} className="flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-left">

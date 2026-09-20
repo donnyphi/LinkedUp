@@ -118,10 +118,14 @@ def cache_set(key: str, value: Any) -> None:
 # ---- social layer -------------------------------------------------------------
 
 def posts() -> List[Dict]:
-    """Seeded posts plus anything the user posted, newest first."""
-    rows = _read(POSTS_PATH, []) + _read(USER_POSTS_PATH, [])
-    rows.sort(key=lambda r: r.get("created_at", 0), reverse=True)
-    return rows
+    """What the user posted (newest first), then the seeded feed (newest first).
+
+    Seeds carry a fixed clock so the demo feed reads the same every day; a post
+    you just wrote must still land on top of them.
+    """
+    mine = sorted(_read(USER_POSTS_PATH, []), key=lambda r: r.get("created_at", 0), reverse=True)
+    seeded = sorted(_read(POSTS_PATH, []), key=lambda r: r.get("created_at", 0), reverse=True)
+    return mine + seeded
 
 
 def get_post(pid: str) -> Optional[Dict]:

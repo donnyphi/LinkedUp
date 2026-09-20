@@ -496,3 +496,69 @@ def missing_piece_reason(project: Dict, row: Dict) -> str:
         first_sentence = f"{first} is the closest fit for what {project['name']} still needs."
     second = f"{first} wants to build {_build_clause(row['profile'].get('want_to_build', ''), 12)}."
     return first_sentence + " " + second
+
+
+# --- post inference (Create) ----------------------------------------------------
+#
+# The model does this when it can; this is what runs when it can't. Both return
+# the same shape: area, needs (taxonomy names), platform, commitment.
+
+SKILL_ALIASES = {
+    "Frontend": ["frontend", "front-end", "front end", "react", "css", "web ui"],
+    "Backend": ["backend", "back-end", "back end", "api", "server", "database"],
+    "Mobile (iOS)": ["ios", "iphone", "swift", "swiftui"],
+    "Mobile (Android)": ["android", "kotlin"],
+    "ML / AI": ["ml", "machine learning", "ai", "model", "llm", "computer vision", "cv"],
+    "Data": ["data", "analytics", "pipeline", "sql", "dataset"],
+    "DevOps / Infra": ["devops", "infra", "deploy", "kubernetes", "docker"],
+    "Systems / Low-level": ["systems", "low-level", "rust", "c++", "embedded systems"],
+    "Security": ["security", "auth", "pentest"],
+    "Game dev": ["game", "unity", "godot"],
+    "Hardware / Embedded": ["hardware", "arduino", "pcb", "sensor", "robot"],
+    "Product design": ["designer", "product design", "ui/ux", "ui design", "design help", "design person"],
+    "Visual design": ["visual design", "branding", "logo", "illustration"],
+    "UX research": ["ux research", "user research", "interviews"],
+    "Motion / 3D": ["motion", "3d", "animation"],
+    "Product management": ["pm", "product manager", "product management"],
+    "Marketing / Growth": ["marketing", "growth", "users", "distribution"],
+    "Sales / BD": ["sales", "bd", "partnerships"],
+    "Fundraising": ["fundraising", "investors", "raise"],
+    "Finance": ["finance", "budget", "accounting"],
+    "Writing / Content": ["writing", "writer", "content", "copy"],
+    "Community": ["community", "organizer", "moderator"],
+    "Video": ["video", "filming", "editor"],
+    "Music production": ["audio", "music", "sound", "producer"],
+}
+
+PLATFORM_WORDS = {"ios": "ios", "iphone": "ios", "android": "android", "mobile": "mobile", "phone": "mobile",
+                  "web": "web", "website": "web", "browser": "web", "hardware": "hardware", "glove": "hardware"}
+
+
+def infer_post(text: str, post_type: str = "update") -> Dict:
+    low = (text or "").lower()
+    needs = []
+    if post_type == "looking_for" or "looking for" in low or "need" in low or "anyone" in low:
+        for skill, aliases in SKILL_ALIASES.items():
+            if any(re.search(r"\b" + re.escape(a) + r"\b", low) for a in aliases):
+                needs.append(skill)
+    area = top_cluster(text)
+    platform = next((v for k, v in PLATFORM_WORDS.items() if re.search(r"\b" + k + r"\b", low)), None)
+    if any(w in low for w in ("hackathon", "this weekend", "tonight")):
+        commitment = "hackathon"
+    elif any(w in low for w in ("cofounder", "co-founder", "startup", "company")):
+        commitment = "cofounder"
+    else:
+        commitment = "side_project"
+    return {"area": area if area != "generic" else None, "needs": needs[:3], "platform": platform, "commitment": commitment}
+
+
+def ask_reason(me: Dict, other: Dict, covered: List[str], post_text: str) -> str:
+    """Card under my own 'looking for' post: why this person answers it."""
+    first = other["name"].split()[0]
+    theme = shared_theme(me.get("want_to_build", "") + " " + post_text, other.get("want_to_build", ""))
+    first_sentence = f"{first} brings {' and '.join(covered[:2])}, the thing you just asked for."
+    if theme:
+        second = f"You both care about {theme}."
+    else:
+        second = f"{first} wants to build {_build_clause(other.get('want_to_build', ''), 10)}."
+    return first_sentence + " " + second
