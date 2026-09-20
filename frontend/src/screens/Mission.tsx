@@ -97,7 +97,7 @@ export default function Mission() {
       .then((m) => {
         setMatch(m)
         // A refresh mid-failure: the message is saved, the reply is still owed.
-        if (m.pending_reply) setFailed("Couldn't reach Claude. Your message is saved.")
+        if (m.pending_reply) setFailed("Couldn't reach the model. Your message is saved.")
       })
       .catch(() => nav('/matches'))
   }, [id, nav])
@@ -146,7 +146,7 @@ export default function Mission() {
       return
     }
     setMatch(res.match)
-    if (res.status === 'error') setFailed(res.error ?? "Couldn't reach Claude. Your message is saved.")
+    if (res.status === 'error') setFailed(res.error ?? "Couldn't reach the model. Your message is saved.")
   }
 
   async function send() {

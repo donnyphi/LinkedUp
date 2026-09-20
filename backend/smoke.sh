@@ -102,7 +102,7 @@ if os.environ['LIVE'] == 'True':
         assert chat[-1]['from'] == 'them' and chat[-1]['text'].strip(), 'no reply'
         print('   amara:', chat[-1]['text'])
     else:
-        print('   (Claude call failed; message kept, retry available)')
+        print('   (model call failed; message kept, retry available)')
         assert r['match']['pending_reply'] is True
 else:
     assert r['status'] == 'no_key', r['status']

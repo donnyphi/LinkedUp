@@ -1,6 +1,6 @@
 """Deterministic stand-ins for every AI call.
 
-Nothing in here touches the network. If the Anthropic key is missing or the API
+Nothing in here touches the network. If the model key is missing or the API
 is down mid-demo, these run instead and the UI never shows an error.
 """
 

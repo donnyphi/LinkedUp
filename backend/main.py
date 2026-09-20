@@ -243,11 +243,11 @@ def toggle_step(mid: str, body: ToggleIn):
     return _match_view(m)
 
 
-NO_KEY_NOTE = "LinkedUp chat needs ANTHROPIC_API_KEY set on the backend. Add it and restart uvicorn."
+NO_KEY_NOTE = "LinkedUp chat needs MODEL_API_KEY set on the backend. Add it to backend/.env and restart uvicorn."
 
 
 def _reply(m: Dict) -> Dict:
-    """Ask Claude for the teammate's next line. Returns the chat response envelope."""
+    """Ask the model for the teammate's next line. Returns the chat response envelope."""
     other = store.get_profile(m["other_id"])
     try:
         text = calls.teammate_reply(_me(), other, m)
@@ -257,7 +257,7 @@ def _reply(m: Dict) -> Dict:
         return {"status": "no_key", "match": _match_view(m)}
     except ai_client.CallFailed:
         store.upsert_match(m)
-        return {"status": "error", "match": _match_view(m), "error": "Couldn't reach Claude. Your message is saved."}
+        return {"status": "error", "match": _match_view(m), "error": "Couldn't reach the model. Your message is saved."}
     m["chat"].append({"from": "them", "text": text, "ts": time.time()})
     store.upsert_match(m)
     return {"status": "ok", "match": _match_view(m)}

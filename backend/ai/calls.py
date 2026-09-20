@@ -1,4 +1,4 @@
-"""The six Claude calls. Each one is cache -> API -> fallback, in that order."""
+"""The six model calls. Each one is cache -> API -> fallback, in that order."""
 
 import hashlib
 import json
@@ -357,4 +357,4 @@ def teammate_reply(user: Dict, other: Dict, match: Dict) -> str:
         text = _clean_reply(raw, other)
         if text:
             return text
-    raise client.CallFailed("Claude returned an empty reply twice")
+    raise client.CallFailed("The model returned an empty reply twice")

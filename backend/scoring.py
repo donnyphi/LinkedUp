@@ -1,4 +1,4 @@
-"""Deterministic where it can be, Claude only for passion and style."""
+"""Deterministic where it can be, the model only for passion and style."""
 
 from typing import Dict, List, Tuple
 

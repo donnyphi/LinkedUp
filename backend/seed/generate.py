@@ -4,7 +4,7 @@ Run once, commit the output. Nothing here runs at request time and nothing
 here touches the network unless you pass --live.
 
     python -m seed.generate          # deterministic, no network
-    python -m seed.generate --live   # score the demo user with Claude instead
+    python -m seed.generate --live   # score the demo user with the model instead
 
 Scores are never hand-set. The demo user's passion/style numbers come from the
 same heuristic that runs for any user when there is no key.

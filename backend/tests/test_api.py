@@ -15,7 +15,7 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def clean(monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("MODEL_API_KEY", raising=False)
     store.reset()
     yield
     store.reset()
@@ -78,7 +78,7 @@ def test_failed_call_keeps_the_message_and_allows_retry(monkeypatch):
     mid = link_amara()["id"]
     client.post(f"/match/{mid}/idea", json={"index": 0})
 
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-not-real")
+    monkeypatch.setenv("MODEL_API_KEY", "not-a-real-key")
 
     def boom(*_a, **_k):
         raise ai_client.CallFailed("nope")
@@ -86,7 +86,7 @@ def test_failed_call_keeps_the_message_and_allows_retry(monkeypatch):
     monkeypatch.setattr(ai_client, "complete", boom)
     r = client.post(f"/match/{mid}/chat", json={"text": "hey"}).json()
     assert r["status"] == "error"
-    assert "sk-ant" not in r["error"]
+    assert "not-a-real-key" not in r["error"]
     assert [m["from"] for m in r["match"]["chat"]] == ["me"]
     assert r["match"]["pending_reply"] is True
 
@@ -119,7 +119,7 @@ def test_failed_call_keeps_the_message_and_allows_retry(monkeypatch):
 def test_empty_reply_is_retried_then_fails_cleanly(monkeypatch):
     onboard()
     mid = link_amara()["id"]
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-not-real")
+    monkeypatch.setenv("MODEL_API_KEY", "not-a-real-key")
     calls_made = []
 
     def empty(*_a, **_k):
@@ -164,7 +164,7 @@ def test_bad_input_does_not_500():
 def test_key_is_never_in_a_response(monkeypatch):
     onboard()
     mid = link_amara()["id"]
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-SECRET-VALUE")
+    monkeypatch.setenv("MODEL_API_KEY", "SECRET-VALUE-ABC")
     monkeypatch.setattr(ai_client, "complete", lambda *a, **k: (_ for _ in ()).throw(ai_client.CallFailed("x")))
     r = client.post(f"/match/{mid}/chat", json={"text": "hey"})
     assert "SECRET" not in r.text

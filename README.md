@@ -18,7 +18,7 @@ Two terminals, from a fresh clone.
 **Terminal 1 — backend** (http://localhost:8000)
 
 ```bash
-cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && ANTHROPIC_API_KEY=sk-ant-... .venv/bin/python -m uvicorn main:app --port 8000
+cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m uvicorn main:app --port 8000
 ```
 
 **Terminal 2 — frontend** (http://localhost:5173)
@@ -31,9 +31,9 @@ Open **http://localhost:5173**.
 
 ### The key
 
-`ANTHROPIC_API_KEY` is read by the backend only; it never reaches the browser.
+`MODEL_API_KEY` lives in `backend/.env` (or the environment), is read by the backend only, and never reaches the browser. Chat runs on the Meta Model API (`muse-spark-1.3`).
 
-- **Chat needs it.** The teammate's replies are live Claude calls. Without a key
+- **Chat needs it.** The teammate's replies are live model calls. Without a key
   the chat shows a setup note instead of a reply — it never falls back to canned
   lines, because canned lines were the bug.
 - Everything else — matching, the match explanation, the three ideas, the
@@ -73,14 +73,14 @@ curl -X POST http://localhost:8000/reset
   they're missing that you have, weighted by level. No AI.
 - `commitment` and `experience` are lookup tables. Commitment below 50 is a soft
   filter — those people sink to the bottom of the stack, they're never hidden.
-- `passion` and `style` are scored for every candidate in one Claude call,
+- `passion` and `style` are scored for every candidate in one model call,
   cached against a hash of your profile, with a deterministic heuristic behind
   it. Nothing is hand-set for the demo: Amara lands first because the honest
   numbers put her there, and `tests/test_scoring.py` prints the top five to
   prove it.
 
 **Chat** (`backend/ai/calls.py: teammate_reply`) — one call per message, never
-cached, `claude-opus-5` (falls back to `claude-fable-5-1`), `max_tokens` 150,
+cached, `muse-spark-1.3` on the Meta Model API (falls back to `muse-spark-1.2`), `max_tokens` 150,
 temperature 0.8. Every request carries both profiles, the match explanation, the
 chosen project with both roles, the mission steps and which are done, and the
 whole conversation. Replies are stripped of quotes and a `Amara:` prefix; an
@@ -133,4 +133,4 @@ Only needed if you change `seed/roster.py`. Deterministic, no network:
 cd backend && .venv/bin/python -m seed.generate
 ```
 
-`--live` scores the demo user with Claude instead (needs the key).
+`--live` scores the demo user with the model instead (needs the key).
