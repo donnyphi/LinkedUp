@@ -32,4 +32,5 @@ def isolated_data_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "USER_POSTS_PATH", str(tmp / "user_posts.json"))
     monkeypatch.setattr(store, "USER_PROJECTS_PATH", str(tmp / "user_projects.json"))
     monkeypatch.setattr(store, "CONNECTIONS_PATH", str(tmp / "connections.json"))
+    monkeypatch.setattr(store, "DEMO_MARK_PATH", str(tmp / "demo_active.json"))
     yield

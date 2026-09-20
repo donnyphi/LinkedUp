@@ -14,7 +14,7 @@ import sys
 
 import store
 from ai import calls, client, fallbacks
-from seed.roster import DEMO_USER, ROSTER
+from seed.roster import DEMO_REASONS, DEMO_USER, ROSTER
 
 
 def main() -> None:
@@ -23,6 +23,7 @@ def main() -> None:
     store._write(store.SEEDS_PATH, ROSTER)
     store._write(store.PROFILES_PATH, ROSTER)
     store._write(store.MATCHES_PATH, [])
+    store.set_demo_active(False)
 
     cache = {}
     ids = sorted(p["id"] for p in ROSTER)
@@ -33,6 +34,9 @@ def main() -> None:
     amara = next(p for p in ROSTER if p["id"] == fallbacks.AMARA_ID)
     me_fp, am_fp = calls._profile_fingerprint(DEMO_USER), calls._profile_fingerprint(amara)
     cache[calls._key("explain", me_fp, am_fp)] = fallbacks.AMARA_EXPLANATION
+    for pid, text in DEMO_REASONS.items():
+        other = next(p for p in ROSTER if p["id"] == pid)
+        cache[calls._key("explain", me_fp, calls._profile_fingerprint(other))] = text
     ideas = [dict(i) for i in fallbacks.AMARA_IDEAS]
     cache[calls._key("ideas", me_fp, am_fp)] = ideas
     for idea in ideas:

@@ -230,10 +230,9 @@ def builder_title(profile: Dict) -> str:
 # --- C. explain_match ------------------------------------------------------
 
 AMARA_EXPLANATION = (
-    "Amara has the Backend and Data you said you're missing, and you have the Frontend and "
-    "Product design she's been building around for two years. You both want to build for the "
-    "same street: she wants to show a neighborhood what its bus actually did, you want to give "
-    "the block one place to see what's going on."
+    "Amara has the Backend and Data you're missing, and you have the Frontend and Product design "
+    "Late Bus has been missing. She's making the city bus tell the truth about itself; you're doing "
+    "the same for the dining hall line - same instinct, different building."
 )
 
 

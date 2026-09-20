@@ -19,6 +19,11 @@
       "po_02",
       "po_06",
       "po_15"
+    ],
+    "tags": [
+      "civic",
+      "transit",
+      "data"
     ]
   },
   {
@@ -40,6 +45,10 @@
     "updates": [
       "po_03",
       "po_12"
+    ],
+    "tags": [
+      "education",
+      "ai"
     ]
   },
   {
@@ -61,6 +70,10 @@
       "po_04",
       "po_10",
       "po_18"
+    ],
+    "tags": [
+      "social",
+      "campus"
     ]
   },
   {
@@ -81,6 +94,10 @@
     "updates": [
       "po_01",
       "po_19"
+    ],
+    "tags": [
+      "campus",
+      "ios"
     ]
   },
   {
@@ -102,6 +119,35 @@
     "updates": [
       "po_05",
       "po_20"
+    ],
+    "tags": [
+      "accessibility",
+      "hardware"
     ]
+  },
+  {
+    "id": "proj_dining",
+    "name": "Dining Rush",
+    "one_liner": "Which dining halls are actually crowded right now.",
+    "team_ids": [
+      "me"
+    ],
+    "has": [
+      "Frontend",
+      "Product design"
+    ],
+    "needs": [
+      "Backend"
+    ],
+    "stage": "prototype",
+    "tags": [
+      "campus",
+      "realtime"
+    ],
+    "updates": [
+      "po_d1",
+      "po_d3"
+    ],
+    "demo": true
   }
 ]

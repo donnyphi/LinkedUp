@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import scoring
 import store
 from ai import calls, client as ai_client, fallbacks
+from seed.roster import DEMO_USER
 from models import (
     ChatIn,
     IdeaIn,
@@ -50,8 +51,16 @@ def _stack_rows(me: Dict) -> List[Dict]:
     others = _others()
     ai_scores = calls.score_pairs(me, others)
     rows = scoring.build_stack(me, others, ai_scores)
-    for r in rows:  # a grounded one-liner for cards; deterministic, no model call
-        r["reason"] = fallbacks.suggestion_reason(me, r["profile"], r["fills"], r["you_bring"])
+    # The per-pair "Why you two" when it has already been written (seeded for the
+    # demo pairs, cached after a live call for anyone else); a grounded one-liner
+    # otherwise. Never a model call here.
+    cache = store.cache_all()
+    fp_me = calls._profile_fingerprint(me)
+    for r in rows:
+        written = cache.get(calls._key("explain", fp_me, calls._profile_fingerprint(r["profile"])))
+        r["reason"] = written if isinstance(written, str) and written.strip() else fallbacks.suggestion_reason(
+            me, r["profile"], r["fills"], r["you_bring"]
+        )
     return rows
 
 
@@ -137,6 +146,8 @@ def post_profile(body: ProfileIn):
     profile["builder_title"] = calls.builder_title(profile)
     store.upsert_profile(profile)
     store.save_matches([])
+    # Demo fill brings its own posts and project along; nobody else inherits them.
+    store.set_demo_active(calls._profile_fingerprint(profile) == calls._profile_fingerprint(DEMO_USER))
     return {"profile": profile, "stack": _stack_rows(profile)}
 
 
@@ -381,6 +392,16 @@ def person(pid: str):
         m = next((m for m in store.matches() if m["other_id"] == pid), None)
         out["match_id"] = m["id"] if m else None
     return out
+
+
+@app.get("/projects")
+def projects_list():
+    """Every project, seeded and started here, with a light team summary."""
+    out = []
+    for pr in store.projects():
+        team = [store.get_profile(t) for t in pr.get("team_ids", [])]
+        out.append({**pr, "team": [{k: t.get(k) for k in ("id", "name", "avatar")} for t in team if t]})
+    return {"projects": out}
 
 
 @app.get("/projects/{pid}")

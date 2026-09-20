@@ -152,7 +152,9 @@ export interface Project {
   needs: string[]
   stage: string
   updates: string[]
+  tags?: string[]
   match_id?: string
+  demo?: boolean
 }
 
 export interface ProjectPage extends Project {

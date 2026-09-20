@@ -10,23 +10,87 @@ def S(name, level="solid"):
 
 DEMO_USER = {
     "id": "me",
-    "name": "Alex Chen",
+    "name": "Donny",
     "school": "MIT",
     "avatar": "nova",
-    "skills": [S("Frontend", "expert"), S("Product design"), S("Visual design")],
+    "skills": [
+        S("Frontend", "expert"),
+        S("Product design"),
+        S("Product management"),
+        S("Writing / Content", "learning"),
+    ],
     "missing": ["Backend", "Data"],
-    "want_to_build": "Tools for cities and campuses. Starting with something that shows a neighborhood what's actually happening on their block, so neighbors stop relying on one chaotic group chat.",
+    "want_to_build": "Campus tools people actually use. Right now: which dining halls are actually crowded, live, so nobody walks across campus into a 40-minute line.",
     "commitment": "side_project",
     "experience": "shipped",
     "team_size": "2",
     "prompts": {
-        "hackathon_person": "...who has the UI running on a real phone before the backend exists",
-        "toxic_trait": "I'll redesign the empty state instead of fixing the bug",
-        "excited_about": "public data that nobody can read, and making it readable",
+        "hackathon_person": "...who has the landing page done before we agree on the idea",
+        "toxic_trait": "I will redesign the whole screen at 3am and call it a small tweak",
+        "excited_about": "any campus system with a public API",
     },
-    "builder_title": "Frontend person who wants to build for neighborhoods",
-    "github": "https://github.com/alexchen",
+    # Demo fill supplies its own identity line; real users get a generated one.
+    "builder_title": "Frontend builder obsessed with making campus tools people actually use",
+    "github": None,
 }
+
+# Seeded, hand-written "Why you two" for the demo user's strongest pairs. These
+# are what the rail, Discover and profile pages show instead of a template.
+# Each is grounded in the two profiles' actual fields. Amara's lives in
+# ai/fallbacks.py so the offline path and the seed stay identical.
+DEMO_REASONS = {
+    "p_lin": (
+        "Lin has the Data you're missing and the infra habits you skip, and your Frontend and "
+        "Product design are the two things her energy tool has never had. You're both after the "
+        "one number that changes what people do - she digs it out of utility data, you pull it "
+        "off the dining line."
+    ),
+    "p_nadia": (
+        "Nadia is making a decade of unreadable lab notebooks searchable; you're trying to make a "
+        "40 MB campus map usable. Same obsession with data nobody can read, and she has the ML "
+        "and Data you don't while you have the Frontend her search has been waiting for."
+    ),
+    "p_maya": (
+        "Maya has the Data and Backend you're missing, and you have the Frontend and Product "
+        "design her tutor has been running without. You both build for students who drop a tool "
+        "the second it lies to them - her tutor, your crowd meter."
+    ),
+    "p_arjun": (
+        "Arjun has the Backend you're missing and deploys on Fridays without flinching; your "
+        "Frontend and Product design are exactly what his infra tools have never had. He builds "
+        "for two-person teams that ship every week, which is the team you'd be."
+    ),
+    "p_sarah": (
+        "Sarah is missing the same Backend and Data you are, so this isn't a skills fit - it's a "
+        "shared obsession. She wants neighbors to actually show up for each other, you want campus "
+        "to actually work for the people on it, and Block Board needs her design and community "
+        "instincts."
+    ),
+}
+
+# The demo user's own seeded content. Only visible while the Demo fill profile
+# is the active user; a real user never inherits it.
+DEMO_PROJECT = {
+    "id": "proj_dining",
+    "name": "Dining Rush",
+    "one_liner": "Which dining halls are actually crowded right now.",
+    "team_ids": ["me"],
+    "has": ["Frontend", "Product design"],
+    "needs": ["Backend"],
+    "stage": "prototype",
+    "tags": ["campus", "realtime"],
+    "updates": ["po_d1", "po_d3"],
+    "demo": True,
+}
+
+DEMO_POSTS = [
+    {"id": "po_d1", "type": "update", "hours_ago": 4, "project_id": "proj_dining",
+     "text": "trying to ship a little app this weekend that shows which dining halls are actually crowded. terrible at backend though lol"},
+    {"id": "po_d2", "type": "update", "hours_ago": 20, "project_id": None,
+     "text": "campus map is 40mb for reasons no one can explain to me."},
+    {"id": "po_d3", "type": "build_log", "hours_ago": 44, "project_id": "proj_dining",
+     "text": "dining hall crowd meter v0 is a google form and a group text. it's embarrassing and 60 people use it."},
+]
 
 # Kept for anything that still imports the old name.
 ALEX = DEMO_USER

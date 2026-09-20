@@ -84,23 +84,24 @@ export const DEMO_USER: {
   team_size: TeamSize
   prompts: Prompts
 } = {
-  name: 'Alex Chen',
+  name: 'Donny',
   school: 'MIT',
   avatar: 'nova',
   skills: [
     { name: 'Frontend', level: 'expert' },
     { name: 'Product design', level: 'solid' },
-    { name: 'Visual design', level: 'solid' },
+    { name: 'Product management', level: 'solid' },
+    { name: 'Writing / Content', level: 'learning' },
   ],
   missing: ['Backend', 'Data'],
   want_to_build:
-    "Tools for cities and campuses. Starting with something that shows a neighborhood what's actually happening on their block, so neighbors stop relying on one chaotic group chat.",
+    'Campus tools people actually use. Right now: which dining halls are actually crowded, live, so nobody walks across campus into a 40-minute line.',
   commitment: 'side_project',
   experience: 'shipped',
   team_size: '2',
   prompts: {
-    hackathon_person: '...who has the UI running on a real phone before the backend exists',
-    toxic_trait: "I'll redesign the empty state instead of fixing the bug",
-    excited_about: 'public data that nobody can read, and making it readable',
+    hackathon_person: '...who has the landing page done before we agree on the idea',
+    toxic_trait: 'I will redesign the whole screen at 3am and call it a small tweak',
+    excited_about: 'any campus system with a public API',
   },
 }
