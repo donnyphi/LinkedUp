@@ -1,15 +1,18 @@
 """Thin model-API wrapper. One model constant, one call path, key never leaves here.
 
-Provider: the Meta Model API (https://api.meta.ai), spoken through its Anthropic
-Messages-compatible endpoint, so the Anthropic SDK is still the transport. The
-key is MODEL_API_KEY, read from the environment or backend/.env, and is never
-logged, returned, or sent anywhere but the provider.
+Provider: the Meta Model API (https://api.meta.ai) over its Chat Completions
+route. Muse Spark is a reasoning model and cannot switch reasoning off; this
+route is the one that lets us pin it to "minimal", which keeps replies fast and
+inside the token budget. The key is MODEL_API_KEY, read from the environment or
+backend/.env at import, and is never logged, returned, or sent anywhere else.
 """
 
 import json
 import os
 import re
 from typing import Any, List, Optional
+
+import httpx
 
 # The only place a model id lives.
 MODEL = "muse-spark-1.3"
@@ -20,8 +23,12 @@ ENV_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 
 MAX_TOKENS = 1400
 TEMPERATURE = 0.7
+REASONING_EFFORT = "minimal"
+# Reasoning tokens count against max_tokens on this provider. Callers ask for a
+# visible budget; this is added on top so thinking never eats the answer.
+REASONING_ALLOWANCE = 400
+TIMEOUT_S = 30.0
 
-_client = None
 _model_in_use = MODEL
 
 
@@ -55,16 +62,6 @@ def have_key() -> bool:
     return bool(os.environ.get(KEY_VAR))
 
 
-def _get_client():
-    global _client
-    if _client is None:
-        from anthropic import Anthropic
-
-        # A request that hangs would hang the whole demo; fail fast instead.
-        _client = Anthropic(base_url=BASE_URL, auth_token=os.environ[KEY_VAR], timeout=20.0, max_retries=1)
-    return _client
-
-
 def strip_fences(text: str) -> str:
     """Models sometimes wrap JSON in ```json fences. Take it off."""
     text = text.strip()
@@ -96,31 +93,45 @@ def complete(
     max_tokens: int = MAX_TOKENS,
     temperature: float = TEMPERATURE,
 ) -> str:
-    """Raise NoKey or CallFailed; never leak the key or a raw provider error."""
+    """Raise NoKey or CallFailed; never leak the key or a raw provider error.
+
+    `messages` are Anthropic-style {role, content} turns; the system prompt is
+    sent as the first chat message. Returns the visible text, "" if the model
+    stopped before writing any (callers treat that as a retryable miss).
+    """
     global _model_in_use
     if not have_key():
         raise NoKey()
-    # `temperature` is accepted for callers but not sent: the installed SDK's
-    # messages.create() no longer takes it, and the provider recommends leaving
-    # sampling at its default anyway.
-    del temperature
+    headers = {"Authorization": f"Bearer {os.environ[KEY_VAR]}", "content-type": "application/json"}
     last_error = "unknown"
     for model in (_model_in_use, FALLBACK_MODEL):
+        body = {
+            "model": model,
+            "max_tokens": max_tokens + REASONING_ALLOWANCE,
+            "reasoning_effort": REASONING_EFFORT,
+            "temperature": temperature,
+            "messages": [{"role": "system", "content": system}] + messages,
+        }
         try:
-            resp = _get_client().messages.create(
-                model=model,
-                max_tokens=max_tokens,
-                system=system,
-                messages=messages,
-            )
-            _model_in_use = model
-            return "".join(b.text for b in resp.content if b.type == "text")
-        except Exception as e:  # noqa: BLE001 - provider detail stays server-side
-            status = getattr(e, "status_code", None)
-            body = getattr(e, "body", None) or {}
-            kind = (body.get("error") or {}).get("type") if isinstance(body, dict) else None
-            last_error = f"{type(e).__name__}{f' {status}' if status else ''}{f' {kind}' if kind else ''}"
+            r = httpx.post(BASE_URL + "/v1/chat/completions", headers=headers, json=body, timeout=TIMEOUT_S)
+        except httpx.HTTPError as e:  # network, timeout - provider detail stays server-side
+            last_error = type(e).__name__
             continue
+        if r.status_code != 200:
+            kind = None
+            try:
+                kind = ((r.json().get("error") or {}).get("type"))
+            except ValueError:
+                pass
+            last_error = f"HTTP {r.status_code}{f' {kind}' if kind else ''}"
+            continue
+        try:
+            choice = (r.json().get("choices") or [{}])[0]
+        except ValueError:
+            last_error = "bad json"
+            continue
+        _model_in_use = model
+        return ((choice.get("message") or {}).get("content") or "").strip()
     raise CallFailed(f"The model did not answer ({last_error})")
 
 
