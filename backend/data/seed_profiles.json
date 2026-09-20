@@ -904,19 +904,19 @@
         "level": "expert"
       },
       {
-        "name": "UX research",
+        "name": "Community",
         "level": "solid"
       },
       {
-        "name": "Frontend",
-        "level": "learning"
+        "name": "UX research",
+        "level": "solid"
       }
     ],
     "missing": [
       "Backend",
       "Data"
     ],
-    "want_to_build": "Small social tools that make people actually show up for each other. Group chats that expire, plans that stick.",
+    "want_to_build": "Small social tools that make neighbors and friends actually show up for each other. Group chats that expire, plans that stick.",
     "commitment": "side_project",
     "experience": "shipped",
     "team_size": "2",

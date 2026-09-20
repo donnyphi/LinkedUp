@@ -390,10 +390,54 @@ def choose_idea(mid: str, body: IdeaIn):
 
     m["chosen_idea"] = body.index
     idea = m["ideas"][body.index]
-    steps = calls.first_mission(_me(), store.get_profile(m["other_id"]), idea)["steps"]
+    me, other = _me(), store.get_profile(m["other_id"])
+    steps = calls.first_mission(me, other, idea)["steps"]
     m["mission"] = {"steps": steps, "done": [False] * len(steps)}
     store.upsert_match(m)
+    store.upsert_user_project(_project_from_idea(m, idea, me, other))
     return _match_view(m)
+
+
+def _project_from_idea(m: Dict, idea: Dict, me: Dict, other: Dict) -> Dict:
+    """Picking an idea makes it a project. Has = what the pair holds; needs = what the idea declared."""
+    needs = list(idea.get("needs") or [])
+    has = []
+    for p in (me, other):
+        for s in p.get("skills") or []:
+            if s.get("level", "solid") != "learning" and s["name"] not in has and s["name"] not in needs:
+                has.append(s["name"])
+    return {
+        "id": f"proj_{m['id']}",
+        "name": idea["name"],
+        "one_liner": idea.get("one_liner", ""),
+        "team_ids": [ME, other["id"]],
+        "has": has,
+        "needs": needs,
+        "stage": "starting",
+        "updates": [],
+        "match_id": m["id"],
+    }
+
+
+@app.get("/projects/{pid}/missing-piece")
+def missing_piece(pid: str):
+    """Who fills what this project still needs. Deterministic, from the same scoring."""
+    pr = store.get_project(pid)
+    if not pr:
+        raise HTTPException(404, "No such project")
+    ranked = fallbacks.missing_piece(pr, [p for p in store.profiles() if p["id"] != ME])
+    if not ranked:
+        return {"candidate": None, "ranked": []}
+    top = ranked[0]
+    conns = store.connections()
+    return {
+        "candidate": {
+            "profile": top["profile"], "score": top["score"], "covers": top["covers"],
+            "reason": fallbacks.missing_piece_reason(pr, top),
+            "connected": conns.get(top["profile"]["id"]) == "connected",
+        },
+        "ranked": [{"id": r["profile"]["id"], "name": r["profile"]["name"], "score": r["score"], "covers": r["covers"]} for r in ranked[:5]],
+    }
 
 
 @app.post("/match/{mid}/mission/toggle")

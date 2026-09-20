@@ -105,7 +105,7 @@
       "style": 93
     },
     "p_sarah": {
-      "passion": 37,
+      "passion": 54,
       "style": 94
     },
     "p_leo": {
@@ -126,7 +126,11 @@
         "me": "The block page, posts UI, mobile layout",
         "them": "Data model, backend, the feed"
       },
-      "difficulty": "weekend"
+      "difficulty": "weekend",
+      "needs": [
+        "Product design",
+        "Community"
+      ]
     },
     {
       "name": "Late Bus",
@@ -135,7 +139,10 @@
         "me": "The daily view and the sharing card",
         "them": "Transit data pipeline, the numbers"
       },
-      "difficulty": "month"
+      "difficulty": "month",
+      "needs": [
+        "UX research"
+      ]
     },
     {
       "name": "City Hall API",
@@ -144,7 +151,11 @@
         "me": "Docs site, explorer UI, developer onboarding",
         "them": "Scrapers, schema, the API itself"
       },
-      "difficulty": "startup"
+      "difficulty": "startup",
+      "needs": [
+        "DevOps / Infra",
+        "Community"
+      ]
     }
   ],
   "mission:698e2dba5099be4c": {
@@ -195,7 +206,7 @@
   "builder_title:eae38435a18020b2": "ML founder building agents that say I don't know",
   "builder_title:93ddb242b4f7ecbb": "Designer building rooms that expire on purpose",
   "builder_title:63d794bc7ddd94b6": "Android dev building for places with no signal",
-  "builder_title:926a35590afadc27": "Designer building small tools that make people show up",
+  "builder_title:4766ba882c04934b": "Designer building small tools that make people show up",
   "builder_title:a48ae989bbbaea7d": "iOS dev building campus apps one dorm at a time",
   "builder_title:5137dc2b30f2db5a": "Growth person who finds the first hundred users"
 }

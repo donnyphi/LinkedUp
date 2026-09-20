@@ -76,6 +76,7 @@ class Idea(BaseModel):
     one_liner: str
     roles: Dict[str, str]
     difficulty: Difficulty
+    needs: List[str] = Field(default_factory=list)
 
 
 class Mission(BaseModel):

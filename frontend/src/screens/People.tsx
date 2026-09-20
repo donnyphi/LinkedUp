@@ -155,10 +155,15 @@ export default function People() {
           <section className="mt-6">
             <h3 className="mb-2 text-[13px] font-semibold text-muted">Currently building</h3>
             {page.projects.map((pr) => (
-              <div key={pr.id} className="rounded-card border border-line bg-surface px-4 py-3">
+              <button
+                key={pr.id}
+                type="button"
+                onClick={() => nav(`/projects/${pr.id}`)}
+                className="mb-2 w-full rounded-card border border-line bg-surface px-4 py-3 text-left"
+              >
                 <p className="text-[16px] font-semibold">{pr.name}</p>
                 <p className="text-[14px] text-muted">{pr.one_liner}</p>
-              </div>
+              </button>
             ))}
           </section>
         )}

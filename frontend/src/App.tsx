@@ -10,6 +10,7 @@ import Messages from './screens/Messages'
 import Mission from './screens/Mission'
 import Onboarding from './screens/Onboarding'
 import People from './screens/People'
+import Project from './screens/Project'
 import Swipe from './screens/Swipe'
 import Thread from './screens/Thread'
 import { useApp } from './store'
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/match/:id" element={guard(<MatchScreen />)} />
             <Route path="/people/:id" element={guard(<People />)} />
             <Route path="/profile" element={guard(<People />)} />
+            <Route path="/projects/:id" element={guard(<Project />)} />
             <Route path="/me" element={<Navigate to="/profile" replace />} />
             <Route path="/matches" element={<Navigate to="/messages" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />

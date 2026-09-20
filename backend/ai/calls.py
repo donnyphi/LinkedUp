@@ -155,7 +155,7 @@ IDEAS_SYSTEM = (
     "Propose three projects these two people could build. Each must draw on BOTH skill sets "
     "and sit at the intersection of both 'wants to build' answers. Fields: name (1-3 words), "
     "one_liner (20 words max), roles {me, them} (one concrete phrase each, derived from their "
-    "actual skills), difficulty (weekend | month | startup). Exactly one must be weekend. "
+    "actual skills), difficulty (weekend | month | startup), needs (1-2 skills from the taxonomy the pair still lacks). Exactly one must be weekend. "
     + BAN + " Return ONLY a JSON array of three objects."
 )
 
@@ -183,6 +183,7 @@ def generate_ideas(user: Dict, other: Dict) -> List[Dict]:
                     "one_liner": str(row.get("one_liner", ""))[:160],
                     "roles": {"me": str(roles.get("me", ""))[:80], "them": str(roles.get("them", ""))[:80]},
                     "difficulty": diff if diff in VALID_DIFF else "month",
+                    "needs": [str(n) for n in (row.get("needs") or [])][:3],
                 }
             )
         if not any(i["difficulty"] == "weekend" for i in out):

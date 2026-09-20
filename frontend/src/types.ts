@@ -56,6 +56,7 @@ export interface Idea {
   one_liner: string
   roles: { me: string; them: string }
   difficulty: Difficulty
+  needs?: string[]
 }
 
 export interface Mission {
@@ -151,6 +152,23 @@ export interface Project {
   needs: string[]
   stage: string
   updates: string[]
+  match_id?: string
+}
+
+export interface ProjectPage extends Project {
+  team: Profile[]
+  update_posts: Post[]
+}
+
+export interface MissingPiece {
+  candidate: {
+    profile: Profile
+    score: number
+    covers: string[]
+    reason: string
+    connected: boolean
+  } | null
+  ranked: { id: string; name: string; score: number; covers: string[] }[]
 }
 
 export interface Fit {

@@ -274,18 +274,21 @@ AMARA_IDEAS = [
         "one_liner": "One page per block for the things neighbors actually need to know.",
         "roles": {"me": "The block page, posts UI, mobile layout", "them": "Data model, backend, the feed"},
         "difficulty": "weekend",
+        "needs": ["Product design", "Community"],
     },
     {
         "name": "Late Bus",
         "one_liner": "Shows what your commute really did this month, not the posted schedule.",
         "roles": {"me": "The daily view and the sharing card", "them": "Transit data pipeline, the numbers"},
         "difficulty": "month",
+        "needs": ["UX research"],
     },
     {
         "name": "City Hall API",
         "one_liner": "Makes local government data usable by the people who live there.",
         "roles": {"me": "Docs site, explorer UI, developer onboarding", "them": "Scrapers, schema, the API itself"},
         "difficulty": "startup",
+        "needs": ["DevOps / Infra", "Community"],
     },
 ]
 
@@ -455,4 +458,41 @@ def suggestion_reason(me: Dict, other: Dict, fills: List[str], you_bring: List[s
         second = f"You bring {you_bring[0]}, which is the one thing their side is missing."
     else:
         second = f"You're both circling the same thing - {_build_clause(other.get('want_to_build', ''), 9)}."
+    return first_sentence + " " + second
+
+
+# --- a project's missing piece --------------------------------------------------
+#
+# Deterministic. Coverage of the project's declared needs (level-weighted) plus
+# how much the candidate's own ambition overlaps the project. Nobody is named.
+
+from taxonomy import LEVEL_WEIGHT as _LW
+
+
+def missing_piece(project: Dict, candidates: List[Dict]) -> List[Dict]:
+    needs = project.get("needs") or []
+    text = project.get("one_liner", "")
+    scored = []
+    for c in candidates:
+        if c["id"] in set(project.get("team_ids") or []):
+            continue
+        levels = {s["name"]: s.get("level", "solid") for s in c.get("skills") or []}
+        covers = [n for n in needs if n in levels]
+        coverage = sum(_LW.get(levels[n], 1.0) for n in covers) / max(1.0, 1.5 * len(needs))
+        passion = passion_score(text, c.get("want_to_build", ""))
+        score = int(round(100 * (0.7 * min(1.0, coverage) + 0.3 * passion / 100)))
+        scored.append({"profile": c, "score": score, "covers": covers, "passion": passion})
+    scored.sort(key=lambda r: (r["score"], len(r["covers"])), reverse=True)
+    return scored
+
+
+def missing_piece_reason(project: Dict, row: Dict) -> str:
+    first = row["profile"]["name"].split()[0]
+    covers = row["covers"]
+    if covers:
+        what = " and ".join(covers[:2])
+        first_sentence = f"{first} brings {what}, {'the two things' if len(covers) >= 2 else 'the thing'} {project['name']} is missing."
+    else:
+        first_sentence = f"{first} is the closest fit for what {project['name']} still needs."
+    second = f"{first} wants to build {_build_clause(row['profile'].get('want_to_build', ''), 12)}."
     return first_sentence + " " + second

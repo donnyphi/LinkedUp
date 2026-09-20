@@ -183,13 +183,18 @@ export default function Mission() {
             <ArrowLeft size={20} strokeWidth={1.75} />
           </button>
           <Avatar name={match.other.avatar} size={36} />
-          <div className="min-w-0 flex-1">
+          <button
+            type="button"
+            onClick={() => idea && nav(`/projects/proj_${match.id}`)}
+            className="min-w-0 flex-1 text-left"
+            disabled={!idea}
+          >
             <p className="truncate text-[15px] font-semibold leading-tight">{idea ? idea.name : match.other.name}</p>
             <p className="truncate text-[12px] text-muted">
               with {first}
               {idea ? ` · ${SCOPE_LABEL[idea.difficulty] ?? idea.difficulty}` : ''}
             </p>
-          </div>
+          </button>
         </div>
       </header>
 
