@@ -1,0 +1,46 @@
+[
+  {
+    "id": "t_leo",
+    "other_id": "p_leo",
+    "read_only": true,
+    "chat": [
+      {
+        "from": "them",
+        "text": "hey, saw you do frontend. the menu widget works but it looks like a spreadsheet lol",
+        "ts": 1789828000
+      },
+      {
+        "from": "me",
+        "text": "ha. send me the repo?",
+        "ts": 1789831600
+      },
+      {
+        "from": "them",
+        "text": "will do after my 2pm",
+        "ts": 1789832200
+      }
+    ]
+  },
+  {
+    "id": "t_sarah",
+    "other_id": "p_sarah",
+    "read_only": true,
+    "chat": [
+      {
+        "from": "them",
+        "text": "your block idea is basically what I wanted Show Up to be for physical places",
+        "ts": 1789720000
+      },
+      {
+        "from": "me",
+        "text": "wait yes. compare notes thursday?",
+        "ts": 1789723600
+      },
+      {
+        "from": "them",
+        "text": "yes. bring the ugly prototype",
+        "ts": 1789723900
+      }
+    ]
+  }
+]

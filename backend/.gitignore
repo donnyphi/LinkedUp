@@ -4,3 +4,6 @@ __pycache__/
 .env
 data/profiles.json
 data/matches.json
+data/user_posts.json
+data/user_projects.json
+data/connections.json

@@ -60,7 +60,8 @@ def _get_client():
     if _client is None:
         from anthropic import Anthropic
 
-        _client = Anthropic(base_url=BASE_URL, auth_token=os.environ[KEY_VAR])
+        # A request that hangs would hang the whole demo; fail fast instead.
+        _client = Anthropic(base_url=BASE_URL, auth_token=os.environ[KEY_VAR], timeout=20.0, max_retries=1)
     return _client
 
 

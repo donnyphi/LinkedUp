@@ -38,7 +38,7 @@ def test_full_demo_path():
     data = onboard()
     assert data["profile"]["builder_title"]
     stack = data["stack"]
-    assert len(stack) == 26
+    assert len(stack) == 29
     assert "p_amara" in [row["profile"]["id"] for row in stack[:3]]
 
     match = link_amara()

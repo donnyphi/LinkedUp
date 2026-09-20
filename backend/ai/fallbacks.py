@@ -36,13 +36,13 @@ CLUSTERS = {
     "food": "food restaurant restaurants recipe recipes cook cooking kitchen coffee menu "
     "farmers grocery",
     "civic": "city transit housing government voting civic local neighborhood neighbors "
-    "neighbor block blocks bus buses public policy municipal commute commuters",
+    "neighbor block blocks bus buses cities campus campuses dorm public policy municipal commute commuters",
     "commerce": "shop store retail marketplace sell selling brand fashion ecommerce "
     "inventory manufacturer manufacturers boutique",
     "productivity": "productivity notes todo calendar focus habit habits organize "
     "workflow scheduling inbox planning",
-    "accessibility": "accessible accessibility disability disabled blind deaf caption "
-    "captions screenreader wheelchair",
+    "accessibility": "accessible accessibility assistive disability disabled blind deaf caption "
+    "captions screenreader wheelchair haptic",
     "sports": "sport sports run running climb climbing basketball soccer gym training "
     "athlete cycling",
     "hardware": "hardware device sensor sensors robot robotics drone arduino circuit "
@@ -380,3 +380,79 @@ def first_mission(user: Dict, other: Dict, idea: Dict) -> Dict:
     if other.get("id") == AMARA_ID:
         return {"steps": list(AMARA_MISSION)}
     return {"steps": list(GENERIC_MISSION)}
+
+
+# --- suggestion reasons (Home feed, Discover, right rail) -------------------
+#
+# Two sentences, every clause grounded in a real field. No model call: these run
+# on every Home load, so they must be instant and deterministic.
+
+THEME = {
+    "civic": "tools for cities",
+    "education": "learning tools",
+    "music": "music",
+    "social": "helping people actually show up for each other",
+    "health": "health",
+    "climate": "climate",
+    "games": "games",
+    "devtools": "developer tools",
+    "commerce": "small businesses",
+    "accessibility": "accessibility",
+    "hardware": "hardware",
+    "science": "research tools",
+    "creative": "creative tools",
+    "productivity": "productivity",
+    "finance": "money tools",
+    "food": "food",
+    "sports": "sport",
+}
+
+AREA_LABEL = {
+    "civic": "civic-tech",
+    "education": "learning",
+    "social": "social",
+    "accessibility": "accessibility",
+    "health": "health",
+    "climate": "climate",
+    "music": "music",
+    "games": "game",
+    "devtools": "developer-tools",
+    "commerce": "commerce",
+    "hardware": "hardware",
+}
+
+
+def shared_theme(a_text: str, b_text: str) -> str:
+    va, vb = _cluster_vec(a_text), _cluster_vec(b_text)
+    shared = {k: min(va[k], vb[k]) for k in va if k in vb}
+    if not shared:
+        return ""
+    return THEME.get(max(shared.items(), key=lambda kv: kv[1])[0], "")
+
+
+def suggestion_reason(me: Dict, other: Dict, fills: List[str], you_bring: List[str], post: Dict = None) -> str:
+    first = (other.get("name") or "They").split()[0]
+    my_top = _top_skill(me).replace(" person", "").replace("Designer", "product design").lower()
+    theme = shared_theme(me.get("want_to_build", ""), (post or {}).get("text", "") + " " + other.get("want_to_build", ""))
+    inferred = (post or {}).get("inferred") or {}
+    needs = [n for n in inferred.get("needs") or [] if n in {s["name"] for s in me.get("skills") or []}]
+
+    if post and needs:
+        area = AREA_LABEL.get(inferred.get("area", ""), inferred.get("area", "")) or "side"
+        first_sentence = f"{first} wants {needs[0].lower()} help for a {area} project."
+    elif fills:
+        first_sentence = f"{first} brings {' and '.join(fills[:2])}, the thing you said you're missing."
+    elif you_bring:
+        first_sentence = f"{first} is missing {you_bring[0]}, which is the thing you do best."
+    else:
+        first_sentence = f"{first} is after the same kind of thing you are."
+
+    if theme and (needs or you_bring):
+        second = f"You specialize in {(needs[0] if needs else you_bring[0]).lower()}, and you both care about {theme}."
+    elif theme:
+        second = f"You both care about {theme}."
+    elif you_bring:
+        second = f"You bring {you_bring[0]}, which is the one thing their side is missing."
+    else:
+        second = f"You're both circling the same thing - {_build_clause(other.get('want_to_build', ''), 9)}."
+    return first_sentence + " " + second

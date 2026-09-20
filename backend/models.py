@@ -68,6 +68,7 @@ class StackEntry(BaseModel):
     fills: List[str] = Field(default_factory=list)
     you_bring: List[str] = Field(default_factory=list)
     fit_label: str = ""
+    reason: str = ""
 
 
 class Idea(BaseModel):

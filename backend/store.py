@@ -13,6 +13,14 @@ PROFILES_PATH = os.path.join(DATA_DIR, "profiles.json")
 MATCHES_PATH = os.path.join(DATA_DIR, "matches.json")
 CACHE_PATH = os.path.join(DATA_DIR, "ai_cache.json")
 
+# Social layer. Seeded files are committed; runtime files are wiped by reset().
+POSTS_PATH = os.path.join(DATA_DIR, "posts.json")
+PROJECTS_PATH = os.path.join(DATA_DIR, "projects.json")
+THREADS_PATH = os.path.join(DATA_DIR, "threads.json")
+USER_POSTS_PATH = os.path.join(DATA_DIR, "user_posts.json")
+USER_PROJECTS_PATH = os.path.join(DATA_DIR, "user_projects.json")
+CONNECTIONS_PATH = os.path.join(DATA_DIR, "connections.json")
+
 _lock = threading.Lock()
 
 
@@ -107,8 +115,66 @@ def cache_set(key: str, value: Any) -> None:
         _write(CACHE_PATH, data)
 
 
+# ---- social layer -------------------------------------------------------------
+
+def posts() -> List[Dict]:
+    """Seeded posts plus anything the user posted, newest first."""
+    rows = _read(POSTS_PATH, []) + _read(USER_POSTS_PATH, [])
+    rows.sort(key=lambda r: r.get("created_at", 0), reverse=True)
+    return rows
+
+
+def get_post(pid: str) -> Optional[Dict]:
+    return next((r for r in posts() if r["id"] == pid), None)
+
+
+def add_user_post(row: Dict) -> None:
+    with _lock:
+        rows = _read(USER_POSTS_PATH, [])
+        rows.append(row)
+        _write(USER_POSTS_PATH, rows)
+
+
+def next_post_id() -> str:
+    return "up_%03d" % (len(_read(USER_POSTS_PATH, [])) + 1)
+
+
+def projects() -> List[Dict]:
+    return _read(PROJECTS_PATH, []) + _read(USER_PROJECTS_PATH, [])
+
+
+def get_project(pid: str) -> Optional[Dict]:
+    return next((r for r in projects() if r["id"] == pid), None)
+
+
+def upsert_user_project(project: Dict) -> None:
+    with _lock:
+        rows = [r for r in _read(USER_PROJECTS_PATH, []) if r["id"] != project["id"]]
+        rows.append(project)
+        _write(USER_PROJECTS_PATH, rows)
+
+
+def threads() -> List[Dict]:
+    return _read(THREADS_PATH, [])
+
+
+def connections() -> Dict[str, str]:
+    """{other_id: 'connected'}"""
+    return _read(CONNECTIONS_PATH, {})
+
+
+def set_connection(other_id: str, status: str) -> None:
+    with _lock:
+        rows = connections()
+        rows[other_id] = status
+        _write(CONNECTIONS_PATH, rows)
+
+
 def reset() -> None:
-    """Wipe 'me' and every match. Seeds survive so the demo can be re-run."""
+    """Wipe 'me', matches, connections and anything the user created. Seeds survive."""
     with _lock:
         save_profiles(seeds())
         save_matches([])
+        _write(USER_POSTS_PATH, [])
+        _write(USER_PROJECTS_PATH, [])
+        _write(CONNECTIONS_PATH, {})

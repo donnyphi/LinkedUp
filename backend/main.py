@@ -1,12 +1,13 @@
 import time
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 import scoring
 import store
-from ai import calls, client as ai_client
+from ai import calls, client as ai_client, fallbacks
 from models import (
     ChatIn,
     IdeaIn,
@@ -48,7 +49,10 @@ def _others() -> List[Dict]:
 def _stack_rows(me: Dict) -> List[Dict]:
     others = _others()
     ai_scores = calls.score_pairs(me, others)
-    return scoring.build_stack(me, others, ai_scores)
+    rows = scoring.build_stack(me, others, ai_scores)
+    for r in rows:  # a grounded one-liner for cards; deterministic, no model call
+        r["reason"] = fallbacks.suggestion_reason(me, r["profile"], r["fills"], r["you_bring"])
+    return rows
 
 
 def _skill_bars(me: Dict, other: Dict) -> List[Dict]:
@@ -161,13 +165,10 @@ def why(other_id: str):
     return {"explanation": calls.explain_match(me, other, score, fills), "score": score}
 
 
-@app.post("/swipe")
-def swipe(body: SwipeIn):
+def _connect(other_id: str) -> Dict:
+    """Connecting is the old right-swipe: create the match (seeds always say yes)."""
     me = _me()
-    if body.dir == "left":
-        return {"matched": False}
-
-    other = store.get_profile(body.other_id)
+    other = store.get_profile(other_id)
     if not other:
         raise HTTPException(404, "No such profile")
 
@@ -175,7 +176,8 @@ def swipe(body: SwipeIn):
         (m for m in store.matches() if m["user_id"] == ME and m["other_id"] == other["id"]), None
     )
     if existing:
-        return {"matched": True, "match": _match_view(existing)}
+        store.set_connection(other["id"], "connected")
+        return _match_view(existing)
 
     ai_scores = calls.score_pairs(me, _others())
     score, fills = scoring.score_one(me, other, ai_scores.get(other["id"], {}))
@@ -192,7 +194,171 @@ def swipe(body: SwipeIn):
         "chat": [],
     }
     store.upsert_match(match)
-    return {"matched": True, "match": _match_view(match)}
+    store.set_connection(other["id"], "connected")
+    return _match_view(match)
+
+
+@app.post("/swipe")
+def swipe(body: SwipeIn):
+    _me()
+    if body.dir == "left":
+        return {"matched": False}
+    return {"matched": True, "match": _connect(body.other_id)}
+
+
+class ConnectIn(BaseModel):
+    other_id: str
+
+
+@app.post("/connect")
+def connect(body: ConnectIn):
+    return {"matched": True, "match": _connect(body.other_id)}
+
+
+# --- social layer ------------------------------------------------------------
+
+
+def _with_author(post: Dict) -> Dict:
+    author = store.get_profile(post["author_id"]) or {}
+    project = store.get_project(post["project_id"]) if post.get("project_id") else None
+    return {
+        **post,
+        "author": {k: author.get(k) for k in ("id", "name", "school", "avatar", "builder_title")},
+        "project": {"id": project["id"], "name": project["name"]} if project else None,
+    }
+
+
+def _suggestion(me: Dict, row: Dict, post: Optional[Dict] = None) -> Dict:
+    other = row["profile"]
+    return {
+        "kind": "suggestion",
+        "id": f"sg_{other['id']}_{post['id'] if post else 'general'}",
+        "profile": other,
+        "score": row["score"],
+        "fit_label": row["fit_label"],
+        "fills": row["fills"],
+        "you_bring": row["you_bring"],
+        "reason": fallbacks.suggestion_reason(me, other, row["fills"], row["you_bring"], post),
+        "post_id": post["id"] if post else None,
+        "connected": store.connections().get(other["id"]) == "connected",
+    }
+
+
+@app.get("/feed")
+def feed():
+    """Posts newest first with 'You two should know each other' cards between them.
+
+    No model call here, ever. Suggestions come from the scored stack and a
+    deterministic, field-grounded reason.
+    """
+    me = store.get_profile(ME)
+    rows = [_with_author(p) for p in store.posts()]
+    if not me:
+        return {"items": [{"kind": "post", **p} for p in rows]}
+
+    by_id = {r["profile"]["id"]: r for r in _stack_rows(me)}
+    my_skills = {s["name"] for s in me.get("skills") or []}
+    items, cooldown, used = [], 0, set()
+    for i, post in enumerate(rows):
+        items.append({"kind": "post", **post})
+        cooldown = max(0, cooldown - 1)
+        row = by_id.get(post["author_id"])
+        needs = set(((post.get("inferred") or {}).get("needs") or []))
+        anchored = (
+            post["type"] == "looking_for"
+            and row is not None
+            and row["score"]["overall"] >= 70
+            and bool(needs & my_skills)
+            and post["author_id"] not in used
+        )
+        if anchored and cooldown == 0:
+            items.append(_suggestion(me, row, post))
+            used.add(post["author_id"])
+            cooldown = 6
+        elif i == 7 and cooldown == 0:
+            # One general card mid-feed: the best person not already shown.
+            best = next((r for r in by_id.values() if r["profile"]["id"] not in used and r["score"]["overall"] >= 70), None)
+            if best:
+                items.append(_suggestion(me, best))
+                used.add(best["profile"]["id"])
+                cooldown = 6
+    return {"items": items}
+
+
+@app.get("/people")
+def people():
+    """Discover: the scored stack, plus whether you're already connected."""
+    me = _me()
+    conns = store.connections()
+    return {"people": [{**r, "connected": conns.get(r["profile"]["id"]) == "connected"} for r in _stack_rows(me)]}
+
+
+@app.get("/people/{pid}")
+def person(pid: str):
+    """A profile page: the person, their posts and projects, and how you two fit."""
+    profile = store.get_profile(pid)
+    if not profile:
+        raise HTTPException(404, "No such profile")
+    posts = [_with_author(p) for p in store.posts() if p["author_id"] == pid]
+    projects = [pr for pr in store.projects() if pid in pr.get("team_ids", [])]
+    out = {"profile": profile, "posts": posts, "projects": projects, "is_me": pid == ME,
+           "connected": False, "match_id": None, "fit": None}
+    me = store.get_profile(ME)
+    if me and pid != ME:
+        row = next((r for r in _stack_rows(me) if r["profile"]["id"] == pid), None)
+        if row:
+            out["fit"] = {
+                "score": row["score"], "fit_label": row["fit_label"], "fills": row["fills"],
+                "you_bring": row["you_bring"], "reason": row["reason"],
+                "skill_bars": _skill_bars(me, profile),
+            }
+        out["connected"] = store.connections().get(pid) == "connected"
+        m = next((m for m in store.matches() if m["other_id"] == pid), None)
+        out["match_id"] = m["id"] if m else None
+    return out
+
+
+@app.get("/projects/{pid}")
+def project(pid: str):
+    pr = store.get_project(pid)
+    if not pr:
+        raise HTTPException(404, "No such project")
+    team = [store.get_profile(t) for t in pr.get("team_ids", [])]
+    updates = [_with_author(p) for p in store.posts() if p["id"] in set(pr.get("updates", []))]
+    return {**pr, "team": [t for t in team if t], "update_posts": updates}
+
+
+@app.get("/threads")
+def threads():
+    """Messages: real threads first (your matches), then seeded read-only ones for texture."""
+    out = []
+    for m in store.matches():
+        other = store.get_profile(m["other_id"])
+        if not other:
+            continue
+        last = m["chat"][-1] if m.get("chat") else None
+        idea = m["ideas"][m["chosen_idea"]] if m.get("chosen_idea") is not None else None
+        out.append({
+            "id": m["id"], "kind": "match", "other": other, "read_only": False,
+            "last": last, "project": idea["name"] if idea else None,
+            "done": sum(1 for d in (m.get("mission") or {}).get("done", []) if d),
+            "total": len((m.get("mission") or {}).get("steps", [])),
+        })
+    out.sort(key=lambda t: (t["last"] or {}).get("ts", 0), reverse=True)
+    for t in store.threads():
+        other = store.get_profile(t["other_id"])
+        if other:
+            out.append({"id": t["id"], "kind": "seed", "other": other, "read_only": True,
+                        "last": t["chat"][-1], "project": None, "done": 0, "total": 0})
+    return {"threads": out}
+
+
+@app.get("/threads/{tid}")
+def thread(tid: str):
+    t = next((t for t in store.threads() if t["id"] == tid), None)
+    if not t:
+        raise HTTPException(404, "No such thread")
+    return {**t, "other": store.get_profile(t["other_id"])}
 
 
 @app.get("/matches")

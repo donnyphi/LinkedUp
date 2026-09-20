@@ -1,23 +1,23 @@
 {
-  "score_pairs:acb8e0913f402551": {
+  "score_pairs:9825989bcdb36735": {
     "p_maya": {
       "passion": 25,
-      "style": 72
+      "style": 68
     },
     "p_dev": {
-      "passion": 50,
+      "passion": 45,
       "style": 94
     },
     "p_sofia": {
-      "passion": 24,
+      "passion": 25,
       "style": 92
     },
     "p_priya": {
       "passion": 24,
-      "style": 84
+      "style": 93
     },
     "p_kai": {
-      "passion": 41,
+      "passion": 36,
       "style": 86
     },
     "p_zoe": {
@@ -37,7 +37,7 @@
       "style": 91
     },
     "p_amara": {
-      "passion": 79,
+      "passion": 84,
       "style": 93
     },
     "p_theo": {
@@ -45,7 +45,7 @@
       "style": 94
     },
     "p_lin": {
-      "passion": 26,
+      "passion": 25,
       "style": 96
     },
     "p_ruby": {
@@ -53,11 +53,11 @@
       "style": 92
     },
     "p_omar": {
-      "passion": 48,
+      "passion": 50,
       "style": 75
     },
     "p_nadia": {
-      "passion": 24,
+      "passion": 25,
       "style": 92
     },
     "p_elena": {
@@ -69,11 +69,11 @@
       "style": 87
     },
     "p_yuki": {
-      "passion": 33,
+      "passion": 30,
       "style": 94
     },
     "p_tess": {
-      "passion": 26,
+      "passion": 25,
       "style": 94
     },
     "p_arjun": {
@@ -89,7 +89,7 @@
       "style": 95
     },
     "p_hana": {
-      "passion": 40,
+      "passion": 34,
       "style": 95
     },
     "p_raj": {
@@ -97,16 +97,28 @@
       "style": 91
     },
     "p_noor": {
-      "passion": 32,
+      "passion": 29,
       "style": 92
     },
     "p_bram": {
       "passion": 24,
       "style": 93
+    },
+    "p_sarah": {
+      "passion": 37,
+      "style": 94
+    },
+    "p_leo": {
+      "passion": 84,
+      "style": 92
+    },
+    "p_jordan": {
+      "passion": 24,
+      "style": 96
     }
   },
-  "explain:2f4de79d4e76328c": "Amara has the Backend and Data you said you're missing, and you have the Frontend and Product design she's been building around for two years. You both want to build for the same street: she wants to show a neighborhood what its bus actually did, you want to give the block one place to see what's going on.",
-  "ideas:2f4de79d4e76328c": [
+  "explain:38ec11e9516e832a": "Amara has the Backend and Data you said you're missing, and you have the Frontend and Product design she's been building around for two years. You both want to build for the same street: she wants to show a neighborhood what its bus actually did, you want to give the block one place to see what's going on.",
+  "ideas:38ec11e9516e832a": [
     {
       "name": "Block Board",
       "one_liner": "One page per block for the things neighbors actually need to know.",
@@ -135,32 +147,32 @@
       "difficulty": "startup"
     }
   ],
-  "mission:e32d3e50a0ad78ea": {
+  "mission:698e2dba5099be4c": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "mission:44fcf47832ff7339": {
+  "mission:cf58411c7d935799": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "mission:35b5b5dab8456767": {
+  "mission:1b9829a7323f90fe": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "builder_title:d2d6c54360170728": "Frontend person who wants to build for neighborhoods",
-  "builder_title:40d2b67192564725": "Designer who wants to build for musicians",
+  "builder_title:20bea655d208f9b2": "Frontend person who wants to build for neighborhoods",
+  "builder_title:8a5f686f0fd3e81b": "ML person building consumer AI that admits mistakes",
   "builder_title:604dd045c2cf31d8": "Frontend producer building an audience first",
   "builder_title:5d9d221f5f2fe90e": "Motion designer teaching music by making it move",
-  "builder_title:89dfcaa6ae3bc66c": "ML person listening to other people's unfinished demos",
+  "builder_title:fb575ce9b678a928": "Hardware person building assistive tech people would wear",
   "builder_title:011fb501153a3c55": "Producer who runs on deadlines and strangers",
   "builder_title:0ef88b5b8df5b542": "Hardware person making synths people can afford",
   "builder_title:f7e09e991d8da232": "Video person scoring films with strangers",
@@ -182,5 +194,8 @@
   "builder_title:343416395697eea9": "Frontend person turning lectures into arguments",
   "builder_title:eae38435a18020b2": "ML founder building agents that say I don't know",
   "builder_title:93ddb242b4f7ecbb": "Designer building rooms that expire on purpose",
-  "builder_title:63d794bc7ddd94b6": "Android dev building for places with no signal"
+  "builder_title:63d794bc7ddd94b6": "Android dev building for places with no signal",
+  "builder_title:926a35590afadc27": "Designer building small tools that make people show up",
+  "builder_title:a48ae989bbbaea7d": "iOS dev building campus apps one dorm at a time",
+  "builder_title:5137dc2b30f2db5a": "Growth person who finds the first hundred users"
 }

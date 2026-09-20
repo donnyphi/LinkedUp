@@ -1,0 +1,107 @@
+[
+  {
+    "id": "proj_latebus",
+    "name": "Late Bus",
+    "one_liner": "Shows what your commute really did this month, not the posted schedule.",
+    "team_ids": [
+      "p_amara"
+    ],
+    "has": [
+      "Backend",
+      "Data"
+    ],
+    "needs": [
+      "Frontend",
+      "Product design"
+    ],
+    "stage": "prototype",
+    "updates": [
+      "po_02",
+      "po_06",
+      "po_15"
+    ]
+  },
+  {
+    "id": "proj_tutor",
+    "name": "Honest Tutor",
+    "one_liner": "An AI tutor that says 'I'm not sure' instead of making it up.",
+    "team_ids": [
+      "p_maya"
+    ],
+    "has": [
+      "ML / AI",
+      "Data"
+    ],
+    "needs": [
+      "Frontend",
+      "Product design"
+    ],
+    "stage": "prototype",
+    "updates": [
+      "po_03",
+      "po_12"
+    ]
+  },
+  {
+    "id": "proj_rooms",
+    "name": "Show Up",
+    "one_liner": "Group chats that expire unless the people in them actually show up.",
+    "team_ids": [
+      "p_sarah"
+    ],
+    "has": [
+      "Product design",
+      "UX research"
+    ],
+    "needs": [
+      "Backend"
+    ],
+    "stage": "prototype",
+    "updates": [
+      "po_04",
+      "po_10",
+      "po_18"
+    ]
+  },
+  {
+    "id": "proj_menu",
+    "name": "Dorm Menu",
+    "one_liner": "Tonight's dining hall menu, one screen, no login.",
+    "team_ids": [
+      "p_leo"
+    ],
+    "has": [
+      "Mobile (iOS)",
+      "Frontend"
+    ],
+    "needs": [
+      "Backend"
+    ],
+    "stage": "shipped",
+    "updates": [
+      "po_01",
+      "po_19"
+    ]
+  },
+  {
+    "id": "proj_glove",
+    "name": "Haptic Glove",
+    "one_liner": "A glove that taps your hand to steer you, for people who can't see the map.",
+    "team_ids": [
+      "p_priya"
+    ],
+    "has": [
+      "Hardware / Embedded",
+      "ML / AI"
+    ],
+    "needs": [
+      "Mobile (iOS)",
+      "Product design"
+    ],
+    "stage": "prototype",
+    "updates": [
+      "po_05",
+      "po_20"
+    ]
+  }
+]

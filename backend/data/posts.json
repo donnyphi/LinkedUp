@@ -1,0 +1,214 @@
+[
+  {
+    "id": "po_01",
+    "author_id": "p_leo",
+    "type": "ship",
+    "text": "shipped the dining hall menu widget to 40 people in my dorm. 3 of them use it daily. that's a product.",
+    "project_id": "proj_menu",
+    "created_at": 1789896400,
+    "likes": 16
+  },
+  {
+    "id": "po_02",
+    "author_id": "p_amara",
+    "type": "looking_for",
+    "text": "looking for someone who actually enjoys frontend because I absolutely do not.",
+    "project_id": "proj_latebus",
+    "created_at": 1789889200,
+    "likes": 21,
+    "inferred": {
+      "area": "civic",
+      "needs": [
+        "Frontend"
+      ],
+      "platform": "web",
+      "commitment": "side_project"
+    }
+  },
+  {
+    "id": "po_03",
+    "author_id": "p_maya",
+    "type": "update",
+    "text": "day 2 of the AI tutor. it now confidently explains things wrong.",
+    "project_id": "proj_tutor",
+    "created_at": 1789882000,
+    "likes": 8
+  },
+  {
+    "id": "po_04",
+    "author_id": "p_sarah",
+    "type": "build_log",
+    "text": "built the ugliest possible prototype but technically it works",
+    "project_id": "proj_rooms",
+    "created_at": 1789874800,
+    "likes": 12
+  },
+  {
+    "id": "po_05",
+    "author_id": "p_priya",
+    "type": "question",
+    "text": "anyone interested in accessibility + computer vision?",
+    "project_id": "proj_glove",
+    "created_at": 1789867600,
+    "likes": 13
+  },
+  {
+    "id": "po_06",
+    "author_id": "p_amara",
+    "type": "update",
+    "text": "finally got realtime bus location data working. the city API is somehow both better and worse than i expected",
+    "project_id": "proj_latebus",
+    "created_at": 1789856800,
+    "likes": 4
+  },
+  {
+    "id": "po_07",
+    "author_id": "p_jordan",
+    "type": "update",
+    "text": "hot take: your landing page doesn't need a hero video. it needs one sentence and a button.",
+    "project_id": null,
+    "created_at": 1789846000,
+    "likes": 19
+  },
+  {
+    "id": "po_08",
+    "author_id": "p_hana",
+    "type": "update",
+    "text": "turned a 50 min lecture into 12 problems and my roommate argued with me about 9 of them. so the feature works",
+    "project_id": null,
+    "created_at": 1789835200,
+    "likes": 22
+  },
+  {
+    "id": "po_09",
+    "author_id": "p_lin",
+    "type": "update",
+    "text": "the utility company's csv has a column called 'value2'. nobody at the utility company knows what value2 is.",
+    "project_id": null,
+    "created_at": 1789820800,
+    "likes": 3
+  },
+  {
+    "id": "po_10",
+    "author_id": "p_sarah",
+    "type": "looking_for",
+    "text": "looking for a backend person for a small app about group chats that expire unless people show up",
+    "project_id": "proj_rooms",
+    "created_at": 1789806400,
+    "likes": 7,
+    "inferred": {
+      "area": "social",
+      "needs": [
+        "Backend"
+      ],
+      "platform": "web",
+      "commitment": "side_project"
+    }
+  },
+  {
+    "id": "po_11",
+    "author_id": "p_leo",
+    "type": "question",
+    "text": "does anyone actually use campus event apps or do we all just find out from a flyer in the bathroom",
+    "project_id": null,
+    "created_at": 1789792000,
+    "likes": 24
+  },
+  {
+    "id": "po_12",
+    "author_id": "p_maya",
+    "type": "update",
+    "text": "tiny win: the tutor finally stops explaining when i say 'ok i get it'",
+    "project_id": "proj_tutor",
+    "created_at": 1789777600,
+    "likes": 17
+  },
+  {
+    "id": "po_13",
+    "author_id": "p_priya",
+    "type": "build_log",
+    "text": "the arm can pick up a cup now. it cannot put the cup down. progress.",
+    "project_id": null,
+    "created_at": 1789756000,
+    "likes": 2
+  },
+  {
+    "id": "po_14",
+    "author_id": "p_jordan",
+    "type": "update",
+    "text": "interviewed 6 people who said they'd pay for it. 0 have paid. lesson learned, again",
+    "project_id": null,
+    "created_at": 1789734400,
+    "likes": 7
+  },
+  {
+    "id": "po_15",
+    "author_id": "p_amara",
+    "type": "idea",
+    "text": "idea: a card that just says how late your bus was this week. nothing else. put it on the fridge.",
+    "project_id": "proj_latebus",
+    "created_at": 1789712800,
+    "likes": 3
+  },
+  {
+    "id": "po_16",
+    "author_id": "p_hana",
+    "type": "looking_for",
+    "text": "looking for someone who knows audio. want to turn lectures into something you can listen to at 2x while walking",
+    "project_id": null,
+    "created_at": 1789691200,
+    "likes": 4,
+    "inferred": {
+      "area": "education",
+      "needs": [
+        "Music production"
+      ],
+      "platform": "mobile",
+      "commitment": "side_project"
+    }
+  },
+  {
+    "id": "po_17",
+    "author_id": "p_lin",
+    "type": "question",
+    "text": "if you know the mbta schedule format please dm me. i'm begging.",
+    "project_id": null,
+    "created_at": 1789669600,
+    "likes": 12
+  },
+  {
+    "id": "po_18",
+    "author_id": "p_sarah",
+    "type": "build_log",
+    "text": "redid the onboarding for the fourth time. it's now two screens. it should be one.",
+    "project_id": "proj_rooms",
+    "created_at": 1789640800,
+    "likes": 9
+  },
+  {
+    "id": "po_19",
+    "author_id": "p_leo",
+    "type": "question",
+    "text": "question for ios people: swiftui list with 500 rows. is it me or is it swiftui",
+    "project_id": "proj_menu",
+    "created_at": 1789612000,
+    "likes": 22
+  },
+  {
+    "id": "po_20",
+    "author_id": "p_priya",
+    "type": "looking_for",
+    "text": "looking for an iOS person to build the phone side of a haptic navigation glove",
+    "project_id": "proj_glove",
+    "created_at": 1789576000,
+    "likes": 23,
+    "inferred": {
+      "area": "accessibility",
+      "needs": [
+        "Mobile (iOS)"
+      ],
+      "platform": "mobile",
+      "commitment": "side_project"
+    }
+  }
+]
