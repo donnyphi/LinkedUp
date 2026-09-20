@@ -79,7 +79,7 @@ export default function MatchScreen() {
         // Coming back to an existing match skips the moment.
         if (m.chosen_idea !== null || m.chat.length > 0) setReveal(false)
       })
-      .catch(() => nav('/swipe'))
+      .catch(() => nav('/home'))
     const t = setTimeout(() => setReveal(false), REVEAL_MS)
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -88,6 +88,7 @@ export default function Mission() {
   const [typing, setTyping] = useState(false)
   const [failed, setFailed] = useState<string | null>(null)
   const [missionOpen, setMissionOpen] = useState(true)
+  const [introOpen, setIntroOpen] = useState(false)
   const chatEnd = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -99,7 +100,7 @@ export default function Mission() {
         // A refresh mid-failure: the message is saved, the reply is still owed.
         if (m.pending_reply) setFailed("Couldn't reach the model. Your message is saved.")
       })
-      .catch(() => nav('/matches'))
+      .catch(() => nav('/messages'))
   }, [id, nav])
 
   useEffect(() => {
@@ -178,7 +179,7 @@ export default function Mission() {
     <div className="flex h-full flex-col">
       <header className="shrink-0 border-b border-line bg-surface px-4 py-3">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => nav('/matches')} aria-label="Back" className="text-muted">
+          <button type="button" onClick={() => nav('/messages')} aria-label="Back" className="text-muted">
             <ArrowLeft size={20} strokeWidth={1.75} />
           </button>
           <Avatar name={match.other.avatar} size={36} />
@@ -191,6 +192,31 @@ export default function Mission() {
           </div>
         </div>
       </header>
+
+      <div className="shrink-0 border-b border-line bg-surface px-4">
+        <button
+          type="button"
+          onClick={() => setIntroOpen(!introOpen)}
+          className="flex w-full items-center justify-between py-2.5 text-left"
+          aria-expanded={introOpen}
+        >
+          <p className="text-[13px] font-medium text-muted">Why LinkedUp introduced you</p>
+          <ChevronDown size={16} strokeWidth={1.75} className={`text-muted transition-transform ${introOpen ? 'rotate-180' : ''}`} />
+        </button>
+        <AnimatePresence initial={false}>
+          {introOpen && (
+            <motion.p
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="overflow-hidden text-[14px] leading-relaxed"
+            >
+              <span className="block pb-3">{match.explanation}</span>
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
 
       {match.mission && (
         <div className="shrink-0 border-b border-line bg-surface px-4">

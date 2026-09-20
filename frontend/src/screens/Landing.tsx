@@ -43,9 +43,9 @@ export default function Landing() {
             <br />
             More LinkedUp.
           </p>
-          <p className="mt-5 max-w-[300px] text-[15px] leading-relaxed text-muted">
-            Find the builder who has what you're missing, then start building together in the
-            next thirty minutes.
+          <p className="mt-5 max-w-[340px] text-[16px] leading-relaxed text-ink/85">
+            LinkedIn tells you what people have done. Social media shows what people are doing.
+            LinkedUp understands who you should be doing it with.
           </p>
         </motion.div>
       </div>

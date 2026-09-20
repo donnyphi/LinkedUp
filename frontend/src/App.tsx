@@ -1,40 +1,58 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
+import RightRail from './components/RightRail'
+import Sidebar from './components/Sidebar'
+import Discover from './screens/Discover'
+import Home from './screens/Home'
 import Landing from './screens/Landing'
-import Matches from './screens/Matches'
 import MatchScreen from './screens/MatchScreen'
-import MeScreen from './screens/MeScreen'
+import Messages from './screens/Messages'
 import Mission from './screens/Mission'
 import Onboarding from './screens/Onboarding'
+import People from './screens/People'
 import Swipe from './screens/Swipe'
+import Thread from './screens/Thread'
 import { useApp } from './store'
 
-const NAV_ROUTES = ['/swipe', '/matches', '/me']
+const BARE_ROUTES = ['/', '/onboarding']
 
+/**
+ * Desktop: sidebar + a 600px column + a light right rail. Mobile: one column
+ * with a bottom nav. The column is the scroll container, so thread views can
+ * pin their input to the bottom with plain h-full.
+ */
 export default function App() {
   const { profile, booted } = useApp()
   const { pathname } = useLocation()
-  const showNav = NAV_ROUTES.some((r) => pathname.startsWith(r))
+  const chrome = Boolean(profile) && !BARE_ROUTES.includes(pathname)
+
+  const guard = (el: JSX.Element) => (profile ? el : <Navigate to="/" replace />)
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-0 sm:p-6">
-      <div className="flex h-screen w-full max-w-[420px] flex-col overflow-hidden bg-page sm:h-[min(860px,calc(100vh-3rem))] sm:rounded-[40px] sm:border sm:border-black/10 sm:shadow-[0_24px_70px_rgba(0,0,0,0.12)]">
-        <div className="no-scrollbar flex-1 overflow-y-auto">
-          {!booted ? null : (
-            <Routes>
-              <Route path="/" element={profile ? <Navigate to="/swipe" replace /> : <Landing />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/swipe" element={profile ? <Swipe /> : <Navigate to="/" replace />} />
-              <Route path="/match/:id" element={<MatchScreen />} />
-              <Route path="/mission/:id" element={<Mission />} />
-              <Route path="/matches" element={profile ? <Matches /> : <Navigate to="/" replace />} />
-              <Route path="/me" element={profile ? <MeScreen /> : <Navigate to="/" replace />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          )}
-        </div>
-        {showNav && profile && <BottomNav />}
-      </div>
+    <div className="flex h-screen flex-col bg-page lg:flex-row lg:justify-center">
+      {chrome && <Sidebar />}
+      <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto bg-page lg:w-[600px] lg:flex-none lg:border-x lg:border-line">
+        {!booted ? null : (
+          <Routes>
+            <Route path="/" element={profile ? <Navigate to="/home" replace /> : <Landing />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/home" element={guard(<Home />)} />
+            <Route path="/discover" element={guard(<Discover />)} />
+            <Route path="/swipe" element={guard(<Swipe />)} />
+            <Route path="/messages" element={guard(<Messages />)} />
+            <Route path="/thread/:id" element={guard(<Thread />)} />
+            <Route path="/mission/:id" element={guard(<Mission />)} />
+            <Route path="/match/:id" element={guard(<MatchScreen />)} />
+            <Route path="/people/:id" element={guard(<People />)} />
+            <Route path="/profile" element={guard(<People />)} />
+            <Route path="/me" element={<Navigate to="/profile" replace />} />
+            <Route path="/matches" element={<Navigate to="/messages" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        )}
+      </main>
+      {chrome && <RightRail />}
+      {chrome && <BottomNav />}
     </div>
   )
 }

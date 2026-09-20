@@ -174,7 +174,7 @@ function SwipeCard({
 
 export default function Swipe() {
   const nav = useNavigate()
-  const { stack, cursor, advance, profile, restart } = useApp()
+  const { stack, cursor, advance, restart } = useApp()
   const [busy, setBusy] = useState(false)
   const [leaving, setLeaving] = useState<'left' | 'right' | null>(null)
   const pressTimer = useRef<number | null>(null)
@@ -225,13 +225,13 @@ export default function Swipe() {
           className="select-none"
           title="Hold to reset the demo"
         >
-          <h1 className="text-[22px] font-bold tracking-tight text-primary">LinkedUp</h1>
+          <h1 className="text-[20px] font-semibold tracking-tight">Quick discover</h1>
           <p className="text-[13px] text-muted">
-            {entry ? 'Builders who complement your stack' : 'That is everybody for now'}
+            {entry ? 'One at a time. Swipe or tap.' : 'That is everybody for now'}
           </p>
         </div>
-        <button type="button" onClick={() => nav('/me')} aria-label="Your profile">
-          <Avatar name={profile?.avatar ?? 'nova'} size={36} />
+        <button type="button" onClick={() => nav('/discover')} className="text-[13px] font-medium text-muted">
+          Back to Discover
         </button>
       </div>
 
@@ -244,7 +244,7 @@ export default function Swipe() {
             </p>
             <button
               type="button"
-              onClick={() => nav('/matches')}
+              onClick={() => nav('/messages')}
               className="mt-5 rounded-full bg-primary px-5 py-2.5 text-[14px] font-semibold text-white"
             >
               See your matches

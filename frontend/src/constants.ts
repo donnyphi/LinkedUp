@@ -94,7 +94,7 @@ export const DEMO_USER: {
   ],
   missing: ['Backend', 'Data'],
   want_to_build:
-    "Something that shows a neighborhood what's actually happening on their block, so neighbors stop relying on one chaotic group chat.",
+    "Tools for cities and campuses. Starting with something that shows a neighborhood what's actually happening on their block, so neighbors stop relying on one chaotic group chat.",
   commitment: 'side_project',
   experience: 'shipped',
   team_size: '2',

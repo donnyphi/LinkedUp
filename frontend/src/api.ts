@@ -1,4 +1,17 @@
-import type { ChatResponse, Match, Profile, ProfileIn, Score, StackEntry } from './types'
+import type {
+  ChatResponse,
+  FeedItem,
+  Match,
+  PersonPage,
+  PersonRow,
+  Profile,
+  ProfileIn,
+  Project,
+  Score,
+  SeedThread,
+  StackEntry,
+  ThreadSummary,
+} from './types'
 
 const BASE = '/api'
 
@@ -47,4 +60,13 @@ export const api = {
   retryChat: (id: string) => post<ChatResponse>(`/match/${id}/chat/retry`),
 
   reset: () => post<{ ok: boolean }>('/reset'),
+
+  // social layer
+  feed: () => call<{ items: FeedItem[] }>('/feed'),
+  people: () => call<{ people: PersonRow[] }>('/people'),
+  person: (id: string) => call<PersonPage>(`/people/${id}`),
+  connect: (other_id: string) => post<{ matched: boolean; match: Match }>('/connect', { other_id }),
+  threads: () => call<{ threads: ThreadSummary[] }>('/threads'),
+  thread: (id: string) => call<SeedThread>(`/threads/${id}`),
+  project: (id: string) => call<Project & { team: Profile[]; update_posts: FeedItem[] }>(`/projects/${id}`),
 }

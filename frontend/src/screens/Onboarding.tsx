@@ -285,8 +285,8 @@ export default function Onboarding() {
           </Card>
         </motion.div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-6">
-          <Button onClick={() => nav('/swipe')}>
-            Find my people
+          <Button onClick={() => nav('/home')}>
+            Go to Home
             <ArrowRight size={20} strokeWidth={1.75} />
           </Button>
         </motion.div>

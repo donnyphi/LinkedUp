@@ -101,3 +101,97 @@ export interface ChatResponse {
   match: Match
   error?: string
 }
+
+// ---- social layer ----------------------------------------------------------
+
+export type PostType = 'update' | 'looking_for' | 'build_log' | 'idea' | 'question' | 'ship'
+
+export interface PostAuthor {
+  id: string
+  name: string
+  school: string
+  avatar: string
+  builder_title: string
+}
+
+export interface Post {
+  id: string
+  author_id: string
+  type: PostType
+  text: string
+  project_id?: string | null
+  created_at: number
+  likes: number
+  inferred?: { area?: string; needs?: string[]; platform?: string; commitment?: string }
+  author: PostAuthor
+  project: { id: string; name: string } | null
+}
+
+export interface Suggestion {
+  kind: 'suggestion'
+  id: string
+  profile: Profile
+  score: Score
+  fit_label: string
+  fills: string[]
+  you_bring: string[]
+  reason: string
+  post_id: string | null
+  connected: boolean
+}
+
+export type FeedItem = ({ kind: 'post' } & Post) | Suggestion
+
+export interface Project {
+  id: string
+  name: string
+  one_liner: string
+  team_ids: string[]
+  has: string[]
+  needs: string[]
+  stage: string
+  updates: string[]
+}
+
+export interface Fit {
+  score: Score
+  fit_label: string
+  fills: string[]
+  you_bring: string[]
+  reason: string
+  skill_bars: SkillBar[]
+}
+
+export interface PersonPage {
+  profile: Profile
+  posts: Post[]
+  projects: Project[]
+  is_me: boolean
+  connected: boolean
+  match_id: string | null
+  fit: Fit | null
+}
+
+export interface PersonRow extends StackEntry {
+  reason: string
+  connected: boolean
+}
+
+export interface ThreadSummary {
+  id: string
+  kind: 'match' | 'seed'
+  other: Profile
+  read_only: boolean
+  last: ChatMessage | null
+  project: string | null
+  done: number
+  total: number
+}
+
+export interface SeedThread {
+  id: string
+  other_id: string
+  read_only: boolean
+  chat: ChatMessage[]
+  other: Profile
+}
