@@ -22,9 +22,11 @@ export default function People() {
   const [why, setWhy] = useState<string | null>(null)
   const [whyOpen, setWhyOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [following, setFollowing] = useState(false)
 
   useEffect(() => {
     setPage(null)
+    setFollowing(false)
     setWhy(null)
     setWhyOpen(false)
     api.person(pid).then(setPage).catch(() => nav('/home'))
@@ -78,7 +80,7 @@ export default function People() {
         <p className="mt-3 text-[17px] font-medium leading-snug">{profile.builder_title}</p>
 
         {!page.is_me && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {page.connected && page.match_id ? (
               <button
                 type="button"
@@ -98,6 +100,16 @@ export default function People() {
                 {busy ? 'Connecting…' : 'Connect'}
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => setFollowing(!following)}
+              aria-pressed={following}
+              className={`rounded-full px-4 py-2.5 text-[14px] font-semibold ${
+                following ? 'bg-ink text-white' : 'border border-line bg-surface'
+              }`}
+            >
+              {following ? 'Following' : 'Follow'}
+            </button>
             {fit && (
               <button
                 type="button"

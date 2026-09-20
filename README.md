@@ -1,11 +1,14 @@
 # LinkedUp
 
-**Less LinkedIn. More LinkedUp.** — Match. Build. Ship.
+**Less LinkedIn. More LinkedUp.**
 
-Tinder for people you want to build with. LinkedUp matches student builders on
-complementary skills and a shared obsession, explains why two people fit, hands
-them three things to build, and then a real AI teammate helps them start talking
-and working in the first thirty minutes. Not recruiting.
+LinkedIn tells you what people have done. Social media shows what people are
+doing. LinkedUp understands who you should be doing it with.
+
+A social network for people who build things. Underneath: scoring that
+understands what people know, what they're missing, what they want to build and
+who complements whom; a feed that says *why* you should know someone; and a
+teammate who helps two strangers start talking and building.
 
 Built for HackMIT 2026, Meta track: *Bringing People Closer Together with AI*.
 
@@ -31,34 +34,42 @@ Open **http://localhost:5173**.
 
 ### The key
 
-`MODEL_API_KEY` lives in `backend/.env` (or the environment), is read by the backend only, and never reaches the browser. Chat runs on the Meta Model API (`muse-spark-1.3`).
+`MODEL_API_KEY` goes in `backend/.env` (copy `.env.example`). The backend reads
+it at startup; it never reaches the browser, the logs, or a response. Chat and
+post inference run on the Meta Model API (`muse-spark-1.3`, falling back to
+`muse-spark-1.2`).
 
-- **Chat needs it.** The teammate's replies are live model calls. Without a key
-  the chat shows a setup note instead of a reply — it never falls back to canned
-  lines, because canned lines were the bug.
-- Everything else — matching, the match explanation, the three ideas, the
-  mission — works offline from `backend/data/ai_cache.json` plus deterministic
-  fallbacks, so the demo path is stable with or without it.
+- **Chat needs it.** Without a key the thread shows a setup note instead of a
+  reply — never a canned line.
+- Everything else — Home, Discover, profiles, "Why you two", ideas, missions,
+  "Find our missing piece" — runs from the committed cache and deterministic
+  scoring. No page depends on a live model call.
+
+To run keyless on purpose: `MODEL_API_KEY= .venv/bin/python -m uvicorn main:app --port 8000`.
 
 ## The demo (2–3 minutes)
 
-1. **Landing** → **Get started**
-2. **Demo fill** (top right of step 1). It fills all three stages and lands on
-   step 3 → **Find my people**
-3. Profile confirmation: what you bring / what you're missing / what you want
-   to build → **Find my people**
-4. **Discovery.** Amara Boateng is the first card, "Strong complement — They
-   bring Data and Backend. You bring Frontend and Product design." → **Connect**
-5. Match moment → match screen: why you two, four paired skill bars, three ideas
-6. Tap **Block Board** → **Start building together**
-7. Mission/chat: send **"hey"** → typing → a greeting-first reply. Send **"yeah
-   what do you think we should build first?"** → a reply that uses the project
-   and the frontend/backend split. Point at *First 30 minutes*.
+1. **Landing** → **Get started** → **Demo fill** → **Find my people** → **Go to Home**
+2. **Home.** Amara's post — *"looking for someone who actually enjoys frontend
+   because I absolutely do not."* — is in the first three, with a card under it:
+   *"Amara wants frontend help for a civic-tech project. You specialize in
+   frontend, and you both care about tools for cities."*
+3. **View profile** → Amara: currently building Late Bus, skills, looking for,
+   posts. **Why you two** → explanation + skill bars.
+4. **Connect** → match moment → **What you could build** → **Block Board** →
+   **Start building together**.
+5. Thread: send **"hey"** → typing → a greeting-first reply. Send **"yeah what
+   do you think we should build first?"** → a reply that uses the history,
+   Block Board and the frontend/backend split. Point at *First 30 minutes*.
+6. Tap **Block Board** in the thread header → project page → **Find our
+   missing piece** → Sarah Chen, with the reason.
+7. **Create** (+) → *Looking for teammate* → post an ask → it lands on top of
+   Home with a card under it.
 
-**Reset between judges:** the *Reset demo* link under *Get started* on the
-landing page, *Reset the demo* on the Profile tab, or hold the LinkedUp wordmark
-on the discovery screen for a second. All three wipe you and your matches and
-keep the 26 seed builders. Same thing from a shell:
+**Reset between judges:** *Reset demo* under *Get started* on the landing page,
+*Reset the demo* on your Profile, or hold the LinkedUp wordmark on Quick
+discover. All clear you, your matches, connections and anything you posted, and
+keep the seeds. Same thing from a shell:
 
 ```bash
 curl -X POST http://localhost:8000/reset
@@ -66,46 +77,49 @@ curl -X POST http://localhost:8000/reset
 
 ## How it works
 
-**Scoring** (`backend/scoring.py`) — five dimensions, weighted
-`0.35 skills + 0.30 passion + 0.20 style + 0.10 commitment + 0.05 experience`.
+**Scoring** (`backend/scoring.py`) — `0.35 skills + 0.30 passion + 0.20 style +
+0.10 commitment + 0.05 experience`. Skills is pure set math on what you're
+missing vs what they have, both ways. Passion and style come from one cached
+model call with a deterministic heuristic behind it. Nothing is hand-set:
+Amara is rank 1 because the honest numbers put her there, and
+`tests/test_scoring.py` prints the top five.
 
-- `skills` is pure set math: what you're missing that they have, and what
-  they're missing that you have, weighted by level. No AI.
-- `commitment` and `experience` are lookup tables. Commitment below 50 is a soft
-  filter — those people sink to the bottom of the stack, they're never hidden.
-- `passion` and `style` are scored for every candidate in one model call,
-  cached against a hash of your profile, with a deterministic heuristic behind
-  it. Nothing is hand-set for the demo: Amara lands first because the honest
-  numbers put her there, and `tests/test_scoring.py` prints the top five to
-  prove it.
+**Suggestions** (`GET /feed`, `/people`, right rail) — from the same scored
+stack. Reasons are two sentences built only from real profile, post and project
+fields (`ai/fallbacks.py: suggestion_reason`). No model call on Home, ever.
 
-**Chat** (`backend/ai/calls.py: teammate_reply`) — one call per message, never
-cached, `muse-spark-1.3` on the Meta Model API (falls back to `muse-spark-1.2`), `max_tokens` 150,
-temperature 0.8. Every request carries both profiles, the match explanation, the
-chosen project with both roles, the mission steps and which are done, and the
-whole conversation. Replies are stripped of quotes and a `Amara:` prefix; an
-empty reply is retried once. History is stored on the match, so a refresh loses
-nothing. A failed call keeps your message and offers *Retry*.
+**Missing piece** (`GET /projects/{id}/missing-piece`) — coverage of the
+project's declared needs, level-weighted, plus how much the candidate's own
+ambition overlaps the project. Deterministic; nobody is named.
 
-**Storage** is JSON files in `backend/data/`. No database, no auth.
+**Live model calls**, and only these: "Why you two" (cached after the first
+call), project ideas and the mission (cached for the demo pair), post inference
+on Create, and the teammate chat. Chat sends both profiles, the match
+explanation, the chosen project with both roles, the mission and its state, and
+the whole conversation on every message; failures keep your message and offer
+Retry.
+
+**Storage** is JSON in `backend/data/`. Seeds are committed; `profiles.json`,
+`matches.json`, `connections.json`, `user_posts.json` and `user_projects.json`
+are runtime and cleared by reset. Tests run in a temp copy and never touch it.
 
 ## Layout
 
 ```
 backend/
-  main.py          FastAPI routes (incl. /session, /match/{id}/chat, /chat/retry, /reset)
+  main.py          routes: session, feed, people, projects, threads, connect, posts, match/chat, reset
   scoring.py       the match algorithm
-  ai/client.py     MODEL lives here, and nowhere else
-  ai/calls.py      cached calls + the live teammate chat
-  ai/fallbacks.py  deterministic stand-ins for the cached calls
-  seed/roster.py   26 hand-written profiles + the Demo fill user
-  seed/generate.py writes seed_profiles.json + primes the cache
-  tests/           pytest (runs in a temp data dir, never touches the demo)
+  ai/client.py     MODEL and the provider live here, and nowhere else
+  ai/calls.py      cached calls, post inference, the live teammate chat
+  ai/fallbacks.py  deterministic reasons, inference and stand-ins
+  seed/roster.py   29 hand-written profiles + the Demo fill user
+  data/            seed_profiles, posts, projects, threads, ai_cache (committed)
+  tests/           pytest, isolated from data/
   smoke.sh         walks the whole API demo path, exits 0 or 1
-frontend/
-  src/index.css    brand tokens (pink/red primary, no purple anywhere)
-  src/screens/     Landing, Onboarding (3 stages), Swipe, Match, Mission, Matches, Me
-  src/components/  Button, Card, IdeaCard, SkillBars, BottomNav, Loading
+frontend/src/
+  App.tsx          sidebar + column + rail on desktop, bottom nav on mobile
+  screens/         Home, Discover, People, Project, Messages, Thread, Mission, Match, Swipe, Onboarding, Landing
+  components/      SuggestedConnection, PostCard, CreateSheet, SkillBars, IdeaCard, Sidebar, RightRail, BottomNav
 ```
 
 ## Checks
@@ -121,16 +135,3 @@ cd frontend && npm run build
 ```bash
 cd backend && ./smoke.sh
 ```
-
-`smoke.sh` needs the backend running. With a key it expects a real reply (or a
-clean failure with the message kept); without one it expects the setup note.
-
-## Regenerating seeds
-
-Only needed if you change `seed/roster.py`. Deterministic, no network:
-
-```bash
-cd backend && .venv/bin/python -m seed.generate
-```
-
-`--live` scores the demo user with the model instead (needs the key).

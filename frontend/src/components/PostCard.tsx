@@ -1,15 +1,33 @@
 import { Heart, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../assets/avatars/Avatar'
 import { SEED_NOW, timeAgo } from '../lib/time'
+import { useApp } from '../store'
 import type { Post } from '../types'
 
-/** A post is a person, a time, some words, and two quiet actions. Nothing else. */
+/**
+ * A post is a person, a time, some words, and two quiet actions. Likes and
+ * replies live in component state only: the demo doesn't persist social actions.
+ */
 export default function PostCard({ post }: { post: Post }) {
   const nav = useNavigate()
+  const { profile } = useApp()
   const [liked, setLiked] = useState(false)
+  const [replying, setReplying] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [comments, setComments] = useState<string[]>([])
   const now = post.id.startsWith('up_') ? Date.now() / 1000 : SEED_NOW
+
+  function submit(e: FormEvent) {
+    e.preventDefault()
+    const text = draft.trim()
+    if (!text) return
+    setComments((c) => [...c, text])
+    setDraft('')
+  }
+
   return (
     <article className="border-b border-line bg-surface px-5 py-4">
       <div className="flex gap-3">
@@ -44,11 +62,49 @@ export default function PostCard({ post }: { post: Post }) {
               <Heart size={18} strokeWidth={1.75} fill={liked ? 'currentColor' : 'none'} />
               {post.likes + (liked ? 1 : 0)}
             </button>
-            <span className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setReplying(!replying)}
+              aria-expanded={replying}
+              className={`flex items-center gap-1.5 ${replying ? 'text-ink' : ''}`}
+            >
               <MessageCircle size={18} strokeWidth={1.75} />
-              Reply
-            </span>
+              {comments.length > 0 ? comments.length : 'Reply'}
+            </button>
           </div>
+
+          {comments.length > 0 && (
+            <div className="mt-3 space-y-2 border-l-2 border-line pl-3">
+              {comments.map((c, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <Avatar name={profile?.avatar ?? 'nova'} size={22} />
+                  <p className="text-[14px] leading-snug">
+                    <span className="mr-1.5 font-semibold">{profile?.name ?? 'You'}</span>
+                    {c}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {replying && (
+            <form onSubmit={submit} className="mt-3 flex items-center gap-2">
+              <input
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                placeholder={`Reply to ${post.author.name.split(' ')[0]}`}
+                className="flex-1 rounded-full border border-line bg-page px-4 py-2 text-[14px]"
+                autoFocus
+              />
+              <button
+                type="submit"
+                disabled={!draft.trim()}
+                className="rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-white disabled:opacity-40"
+              >
+                Reply
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </article>
