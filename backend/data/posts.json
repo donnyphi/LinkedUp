@@ -26,6 +26,16 @@
     }
   },
   {
+    "id": "po_d1",
+    "author_id": "me",
+    "type": "update",
+    "text": "trying to ship a little app this weekend that shows which dining halls are actually crowded. terrible at backend though lol",
+    "project_id": "proj_dining",
+    "created_at": 1789885600,
+    "likes": 11,
+    "demo": true
+  },
+  {
     "id": "po_03",
     "author_id": "p_maya",
     "type": "update",
@@ -80,6 +90,16 @@
     "likes": 22
   },
   {
+    "id": "po_d2",
+    "author_id": "me",
+    "type": "update",
+    "text": "campus map is 40mb for reasons no one can explain to me.",
+    "project_id": null,
+    "created_at": 1789828000,
+    "likes": 11,
+    "demo": true
+  },
+  {
     "id": "po_09",
     "author_id": "p_lin",
     "type": "update",
@@ -131,6 +151,16 @@
     "project_id": null,
     "created_at": 1789756000,
     "likes": 2
+  },
+  {
+    "id": "po_d3",
+    "author_id": "me",
+    "type": "build_log",
+    "text": "dining hall crowd meter v0 is a google form and a group text. it's embarrassing and 60 people use it.",
+    "project_id": "proj_dining",
+    "created_at": 1789741600,
+    "likes": 11,
+    "demo": true
   },
   {
     "id": "po_14",

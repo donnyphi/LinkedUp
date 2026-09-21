@@ -20,6 +20,7 @@ THREADS_PATH = os.path.join(DATA_DIR, "threads.json")
 USER_POSTS_PATH = os.path.join(DATA_DIR, "user_posts.json")
 USER_PROJECTS_PATH = os.path.join(DATA_DIR, "user_projects.json")
 CONNECTIONS_PATH = os.path.join(DATA_DIR, "connections.json")
+DEMO_MARK_PATH = os.path.join(DATA_DIR, "demo_active.json")
 
 _lock = threading.Lock()
 
@@ -117,6 +118,22 @@ def cache_set(key: str, value: Any) -> None:
 
 # ---- social layer -------------------------------------------------------------
 
+def demo_active() -> bool:
+    """True while the Demo fill profile is the current user."""
+    return bool(_read(DEMO_MARK_PATH, False))
+
+
+def set_demo_active(value: bool) -> None:
+    _write(DEMO_MARK_PATH, bool(value))
+
+
+def _visible(rows: List[Dict]) -> List[Dict]:
+    """Rows marked demo belong to the Demo fill user and vanish for anyone else."""
+    if demo_active():
+        return rows
+    return [r for r in rows if not r.get("demo")]
+
+
 def posts() -> List[Dict]:
     """What the user posted (newest first), then the seeded feed (newest first).
 
@@ -124,7 +141,7 @@ def posts() -> List[Dict]:
     you just wrote must still land on top of them.
     """
     mine = sorted(_read(USER_POSTS_PATH, []), key=lambda r: r.get("created_at", 0), reverse=True)
-    seeded = sorted(_read(POSTS_PATH, []), key=lambda r: r.get("created_at", 0), reverse=True)
+    seeded = sorted(_visible(_read(POSTS_PATH, [])), key=lambda r: r.get("created_at", 0), reverse=True)
     return mine + seeded
 
 
@@ -144,7 +161,7 @@ def next_post_id() -> str:
 
 
 def projects() -> List[Dict]:
-    return _read(PROJECTS_PATH, []) + _read(USER_PROJECTS_PATH, [])
+    return _visible(_read(PROJECTS_PATH, [])) + _read(USER_PROJECTS_PATH, [])
 
 
 def get_project(pid: str) -> Optional[Dict]:
@@ -182,3 +199,4 @@ def reset() -> None:
         _write(USER_POSTS_PATH, [])
         _write(USER_PROJECTS_PATH, [])
         _write(CONNECTIONS_PATH, {})
+        _write(DEMO_MARK_PATH, False)

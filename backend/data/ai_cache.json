@@ -1,124 +1,129 @@
 {
-  "score_pairs:9825989bcdb36735": {
+  "score_pairs:7442d6460f3c6f13": {
     "p_maya": {
-      "passion": 25,
-      "style": 68
+      "passion": 26,
+      "style": 74
     },
     "p_dev": {
-      "passion": 45,
-      "style": 94
+      "passion": 34,
+      "style": 86
     },
     "p_sofia": {
       "passion": 25,
-      "style": 92
+      "style": 85
     },
     "p_priya": {
       "passion": 24,
-      "style": 93
+      "style": 85
     },
     "p_kai": {
-      "passion": 36,
-      "style": 86
+      "passion": 24,
+      "style": 82
     },
     "p_zoe": {
       "passion": 24,
-      "style": 93
+      "style": 85
     },
     "p_finn": {
       "passion": 24,
-      "style": 92
+      "style": 85
     },
     "p_jonas": {
       "passion": 25,
-      "style": 81
+      "style": 78
     },
     "p_isla": {
       "passion": 24,
-      "style": 91
+      "style": 85
     },
     "p_amara": {
-      "passion": 84,
-      "style": 93
+      "passion": 93,
+      "style": 85
     },
     "p_theo": {
       "passion": 24,
-      "style": 94
+      "style": 86
     },
     "p_lin": {
-      "passion": 25,
-      "style": 96
+      "passion": 24,
+      "style": 86
     },
     "p_ruby": {
       "passion": 24,
-      "style": 92
+      "style": 85
     },
     "p_omar": {
-      "passion": 50,
-      "style": 75
+      "passion": 55,
+      "style": 72
     },
     "p_nadia": {
       "passion": 25,
-      "style": 92
+      "style": 85
     },
     "p_elena": {
       "passion": 24,
-      "style": 94
+      "style": 86
     },
     "p_marcus": {
       "passion": 24,
-      "style": 87
+      "style": 92
     },
     "p_yuki": {
-      "passion": 30,
-      "style": 94
+      "passion": 24,
+      "style": 86
     },
     "p_tess": {
-      "passion": 25,
-      "style": 94
+      "passion": 24,
+      "style": 86
     },
     "p_arjun": {
       "passion": 24,
-      "style": 93
+      "style": 85
     },
     "p_ade": {
       "passion": 25,
-      "style": 93
+      "style": 85
     },
     "p_clara": {
       "passion": 24,
-      "style": 95
+      "style": 86
     },
     "p_hana": {
-      "passion": 34,
-      "style": 95
+      "passion": 24,
+      "style": 86
     },
     "p_raj": {
-      "passion": 25,
-      "style": 91
+      "passion": 24,
+      "style": 85
     },
     "p_noor": {
-      "passion": 29,
-      "style": 92
+      "passion": 24,
+      "style": 85
     },
     "p_bram": {
       "passion": 24,
-      "style": 93
+      "style": 86
     },
     "p_sarah": {
-      "passion": 54,
-      "style": 94
+      "passion": 41,
+      "style": 86
     },
     "p_leo": {
-      "passion": 84,
-      "style": 92
+      "passion": 95,
+      "style": 85
     },
     "p_jordan": {
       "passion": 24,
-      "style": 96
+      "style": 86
     }
   },
-  "explain:38ec11e9516e832a": "Amara has the Backend and Data you said you're missing, and you have the Frontend and Product design she's been building around for two years. You both want to build for the same street: she wants to show a neighborhood what its bus actually did, you want to give the block one place to see what's going on.",
-  "ideas:38ec11e9516e832a": [
+  "explain:c234a0e889b6d6f7": "Amara has the Backend and Data you're missing, and you have the Frontend and Product design Late Bus has been missing. She's making the city bus tell the truth about itself; you're doing the same for the dining hall line - same instinct, different building.",
+  "explain:42d561f86c82a10e": "Lin has the Data you're missing and the infra habits you skip, and your Frontend and Product design are the two things her energy tool has never had. You're both after the one number that changes what people do - she digs it out of utility data, you pull it off the dining line.",
+  "explain:5040fe6646654903": "Nadia is making a decade of unreadable lab notebooks searchable; you're trying to make a 40 MB campus map usable. Same obsession with data nobody can read, and she has the ML and Data you don't while you have the Frontend her search has been waiting for.",
+  "explain:b2fddd88915a0d78": "Maya has the Data and Backend you're missing, and you have the Frontend and Product design her tutor has been running without. You both build for students who drop a tool the second it lies to them - her tutor, your crowd meter.",
+  "explain:5302fe8f9cb0c0a8": "Arjun has the Backend you're missing and deploys on Fridays without flinching; your Frontend and Product design are exactly what his infra tools have never had. He builds for two-person teams that ship every week, which is the team you'd be.",
+  "explain:26d36d02092866ec": "Sarah is missing the same Backend and Data you are, so this isn't a skills fit - it's a shared obsession. She wants neighbors to actually show up for each other, you want campus to actually work for the people on it, and Block Board needs her design and community instincts.",
+  "ideas:c234a0e889b6d6f7": [
     {
       "name": "Block Board",
       "one_liner": "One page per block for the things neighbors actually need to know.",
@@ -158,28 +163,28 @@
       ]
     }
   ],
-  "mission:698e2dba5099be4c": {
+  "mission:3fdd2707f27ff758": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "mission:cf58411c7d935799": {
+  "mission:e4ca7370dc2e5081": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "mission:1b9829a7323f90fe": {
+  "mission:e559f9deb181d268": {
     "steps": [
       "Each say the one thing Block Board must do or it's pointless.",
       "Sketch the block page on paper together. Ten minutes, no laptops.",
       "Name it, claim the repo, push one empty commit."
     ]
   },
-  "builder_title:20bea655d208f9b2": "Frontend person who wants to build for neighborhoods",
+  "builder_title:6d39797b078c4fa1": "Frontend builder obsessed with making campus tools people actually use",
   "builder_title:8a5f686f0fd3e81b": "ML person building consumer AI that admits mistakes",
   "builder_title:604dd045c2cf31d8": "Frontend producer building an audience first",
   "builder_title:5d9d221f5f2fe90e": "Motion designer teaching music by making it move",
@@ -208,251 +213,5 @@
   "builder_title:63d794bc7ddd94b6": "Android dev building for places with no signal",
   "builder_title:4766ba882c04934b": "Designer building small tools that make people show up",
   "builder_title:a48ae989bbbaea7d": "iOS dev building campus apps one dorm at a time",
-  "builder_title:5137dc2b30f2db5a": "Growth person who finds the first hundred users",
-  "builder_title:f5cc6dcec1d89177": "First-time hacker who codes for campus fun",
-  "score_pairs:40705157e43e1246": {
-    "p_maya": {
-      "passion": 20,
-      "style": 45
-    },
-    "p_dev": {
-      "passion": 88,
-      "style": 62
-    },
-    "p_sofia": {
-      "passion": 82,
-      "style": 64
-    },
-    "p_priya": {
-      "passion": 25,
-      "style": 48
-    },
-    "p_kai": {
-      "passion": 86,
-      "style": 84
-    },
-    "p_zoe": {
-      "passion": 80,
-      "style": 58
-    },
-    "p_finn": {
-      "passion": 75,
-      "style": 55
-    },
-    "p_jonas": {
-      "passion": 15,
-      "style": 42
-    },
-    "p_isla": {
-      "passion": 18,
-      "style": 50
-    },
-    "p_amara": {
-      "passion": 12,
-      "style": 52
-    },
-    "p_theo": {
-      "passion": 68,
-      "style": 68
-    },
-    "p_lin": {
-      "passion": 10,
-      "style": 48
-    },
-    "p_ruby": {
-      "passion": 72,
-      "style": 71
-    },
-    "p_omar": {
-      "passion": 10,
-      "style": 40
-    },
-    "p_nadia": {
-      "passion": 12,
-      "style": 46
-    },
-    "p_elena": {
-      "passion": 22,
-      "style": 54
-    },
-    "p_marcus": {
-      "passion": 66,
-      "style": 63
-    },
-    "p_yuki": {
-      "passion": 20,
-      "style": 55
-    },
-    "p_tess": {
-      "passion": 28,
-      "style": 50
-    },
-    "p_arjun": {
-      "passion": 10,
-      "style": 45
-    },
-    "p_ade": {
-      "passion": 12,
-      "style": 60
-    },
-    "p_clara": {
-      "passion": 25,
-      "style": 38
-    },
-    "p_hana": {
-      "passion": 30,
-      "style": 58
-    },
-    "p_raj": {
-      "passion": 15,
-      "style": 40
-    },
-    "p_noor": {
-      "passion": 30,
-      "style": 52
-    },
-    "p_bram": {
-      "passion": 14,
-      "style": 53
-    },
-    "p_sarah": {
-      "passion": 28,
-      "style": 54
-    },
-    "p_leo": {
-      "passion": 32,
-      "style": 66
-    },
-    "p_jordan": {
-      "passion": 30,
-      "style": 42
-    }
-  },
-  "explain:68297ec060274379": "You and Kai are both fully locked in for the hackathon and you both want to make entertainment that actually takes care of people. You bring the frontend and product instincts and he brings expert music production and community magic, so together you could actually ship that weekly four-strangers-one-song-by-Sunday idea for the care track.",
-  "explain:f0de52e79aa2b738": "You've never shipped before and Zoe has, and you both light up about sound that shouldn't work — you with pi, her with cheap DACs that have no business sounding that good. You can bring the frontend and product feel to that $40 modular synth gear while she owns the hardware and low-level systems that make it actually play.",
-  "explain:3771ba7ff8f2f3e9": "You've never done a hackathon before and Marcus has already shipped, so you'll learn a ton just watching how fast he gets a prototype up. You both light up about playful, buildable entertainment stuff — you bring product design instincts and he brings solid backend and game dev chops to actually make your MIT hackathon entertainment care idea playable.",
-  "ideas:68297ec060274379": [
-    {
-      "name": "Sunday Strangers EP",
-      "one_liner": "Four strangers matched Friday release one shared song by Sunday for care wards.",
-      "roles": {
-        "me": "designs matching and voting frontend flow",
-        "them": "produces starter loops and hosts release circle"
-      },
-      "difficulty": "weekend",
-      "needs": [
-        "Backend"
-      ]
-    },
-    {
-      "name": "Care Ward Jukebox",
-      "one_liner": "Weekly stranger quartets write comfort songs requested by hospital patients.",
-      "roles": {
-        "me": "manages song request backlog and briefs",
-        "them": "mixes final tracks and runs listener community"
-      },
-      "difficulty": "month",
-      "needs": [
-        "Backend",
-        "Product design"
-      ]
-    },
-    {
-      "name": "Four By Friday",
-      "one_liner": "Season-long league where rotating foursomes drop a track each Sunday.",
-      "roles": {
-        "me": "writes prompts and rules content pages",
-        "them": "masters weekly songs and grows neighborhood teams"
-      },
-      "difficulty": "startup",
-      "needs": [
-        "Backend"
-      ]
-    }
-  ],
-  "ideas:f0de52e79aa2b738": [
-    {
-      "name": "Hum Forty Synth",
-      "one_liner": "Forty dollar pocket synth kit that plays soothing loops for stressed hackers live.",
-      "roles": {
-        "me": "Frontend learning to build web tuner UI",
-        "them": "Hardware Embedded expert wiring cheap DAC synth"
-      },
-      "difficulty": "weekend",
-      "needs": [
-        "Backend"
-      ]
-    },
-    {
-      "name": "Care Rave Box",
-      "one_liner": "Battery jam box for care track lounges with tactile knobs and guided decompress jams.",
-      "roles": {
-        "me": "Product design learning for enclosure and knob layout",
-        "them": "Music production solid composing calm-down patches"
-      },
-      "difficulty": "month",
-      "needs": [
-        "Backend",
-        "Visual design"
-      ]
-    },
-    {
-      "name": "Dorm Synth Collective",
-      "one_liner": "Forty dollar modular synth club with swap meets, care concerts, and repair nights.",
-      "roles": {
-        "me": "Product management learning to run hackathon pilot program",
-        "them": "Systems Low-level solid for firmware and tuning tools"
-      },
-      "difficulty": "startup",
-      "needs": [
-        "Visual design"
-      ]
-    }
-  ],
-  "ideas:3771ba7ff8f2f3e9": [
-    {
-      "name": "Cozy Level Nights",
-      "one_liner": "No-code cozy level builder where hackathon teams craft calming care-themed mini games.",
-      "roles": {
-        "me": "Product design wireframes and care-track writing",
-        "them": "Game dev level engine plus backend saves"
-      },
-      "difficulty": "weekend",
-      "needs": [
-        "Visual design"
-      ]
-    },
-    {
-      "name": "Care Quest Maker",
-      "one_liner": "Entertainment toolkit turning self-care routines into playable no-code platformer levels.",
-      "roles": {
-        "me": "Product management scoping and frontend screens",
-        "them": "Systems low-level tile engine and backend storage"
-      },
-      "difficulty": "month",
-      "needs": [
-        "Motion / 3D",
-        "Visual design"
-      ]
-    },
-    {
-      "name": "Playful Rest Arcade",
-      "one_liner": "Community arcade for sharing gentle no-code levels about rest, kindness, and play.",
-      "roles": {
-        "me": "Frontend arcade UI and content curation",
-        "them": "Backend level sharing plus game dev runtime"
-      },
-      "difficulty": "startup",
-      "needs": [
-        "Marketing / Growth"
-      ]
-    }
-  ],
-  "mission:13fd85b9b1012620": {
-    "steps": [
-      "Call out one soothing loop each, then pick which sound your tuner UI controls first.",
-      "Show Zoe your care-track idea, ask what knob she can wire by tonight.",
-      "Ask Zoe to hum pi digits, then promise what button plays it back live."
-    ]
-  }
+  "builder_title:5137dc2b30f2db5a": "Growth person who finds the first hundred users"
 }

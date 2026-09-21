@@ -109,7 +109,7 @@ def test_failed_call_keeps_the_message_and_allows_retry(monkeypatch):
     assert chat[1]["text"] == "hey! glad we matched lol. wanna pick what Block Board does first?"
 
     # Full context went with the request.
-    for needle in ("Amara Boateng", "Alex Chen", "Block Board", "First 30 minutes",
+    for needle in ("Amara Boateng", DEMO_USER["name"], "Block Board", "First 30 minutes",
                    "step 1 not done", "USER: hey", "<why_you_matched>"):
         assert needle in captured["system"] + captured["user"], needle
 
